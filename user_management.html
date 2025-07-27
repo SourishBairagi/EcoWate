@@ -1,0 +1,2761 @@
+// Menu Item Active State
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show User Management content and hide dashboard
+                const menuText = this.querySelector('span').textContent;
+                if (menuText === 'User Management') {
+                    document.getElementById('userManagementContent').style.display = 'block';
+                    document.querySelector('.nav-title').textContent = 'User Management';
+                }
+            });
+        });
+
+        // Tab Switching
+        function switchTab(tabName) {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const usersTable = document.getElementById('usersTable');
+            const collectorsTable = document.getElementById('collectorsTable');
+            
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            if (tabName === 'users') {
+                document.querySelector('.tab-btn[onclick="switchTab(\'users\')"]').classList.add('active');
+                usersTable.style.display = 'block';
+                collectorsTable.style.display = 'none';
+            } else if (tabName === 'collectors') {
+                document.querySelector('.tab-btn[onclick="switchTab(\'collectors\')"]').classList.add('active');
+                usersTable.style.display = 'none';
+                collectorsTable.style.display = 'block';
+            }
+        }
+
+        // Modal Functions
+        function openAddUserModal() {
+            document.getElementById('addUserModal').classList.add('active');
+        }
+
+        function closeAddUserModal() {
+            document.getElementById('addUserModal').classList.remove('active');
+        }
+
+        function openEditUserModal() {
+            document.getElementById('editUserModal').classList.add('active');
+        }
+
+        function closeEditUserModal() {
+            document.getElementById('editUserModal').classList.remove('active');
+        }
+
+        // Toggle Role Fields in Add User Modal
+        function toggleRoleFields() {
+            const userRole = document.getElementById('userRole').value;
+            const userTypeGroup = document.getElementById('userTypeGroup');
+            const vehicleGroup = document.getElementById('vehicleGroup');
+            const zoneGroup = document.getElementById('zoneGroup');
+            
+            if (userRole === 'collector') {
+                userTypeGroup.style.display = 'none';
+                vehicleGroup.style.display = 'block';
+                zoneGroup.style.display = 'block';
+            } else {
+                userTypeGroup.style.display = 'block';
+                vehicleGroup.style.display = 'none';
+                zoneGroup.style.display = 'none';
+            }
+        }
+
+        // Search Functionality
+        document.querySelector('.search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.data-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Bulk Selection
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('#usersTable .row-checkbox');
+            const bulkButtons = document.querySelectorAll('#usersTable .bulk-action-btn');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            
+            bulkButtons.forEach(btn => {
+                btn.disabled = !this.checked;
+            });
+        });
+
+        document.getElementById('selectAllCollectors').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('#collectorsTable .row-checkbox');
+            const bulkButtons = document.querySelectorAll('#collectorsTable .bulk-action-btn');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            
+            bulkButtons.forEach(btn => {
+                btn.disabled = !this.checked;
+            });
+        });
+
+        // Individual checkbox handling
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('row-checkbox')) {
+                const tableContainer = e.target.closest('.table-container');
+                const selectAllCheckbox = tableContainer.querySelector('#selectAll, #selectAllCollectors');
+                const rowCheckboxes = tableContainer.querySelectorAll('.row-checkbox');
+                const bulkButtons = tableContainer.querySelectorAll('.bulk-action-btn');
+                
+                const checkedBoxes = Array.from(rowCheckboxes).filter(cb => cb.checked);
+                const allChecked = checkedBoxes.length === rowCheckboxes.length;
+                const someChecked = checkedBoxes.length > 0;
+                
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.checked = allChecked;
+                    selectAllCheckbox.indeterminate = someChecked && !allChecked;
+                }
+                
+        // Individual checkbox handling
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('row-checkbox')) {
+                const tableContainer = e.target.closest('.table-container');
+                const selectAllCheckbox = tableContainer.querySelector('#selectAll, #selectAllCollectors');
+                const rowCheckboxes = tableContainer.querySelectorAll('.row-checkbox');
+                const bulkButtons = tableContainer.querySelectorAll('.bulk-action-btn');
+                
+                const checkedBoxes = Array.from(rowCheckboxes).filter(cb => cb.checked);
+                const allChecked = checkedBoxes.length === rowCheckboxes.length;
+                const someChecked = checkedBoxes.length > 0;
+                
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.checked = allChecked;
+                    selectAllCheckbox.indeterminate = someChecked && !allChecked;
+                }
+                
+                bulkButtons.forEach(btn => {
+                    btn.disabled = !someChecked;
+                });
+            }
+        });
+
+        // Action Button Handlers
+        document.addEventListener('click', function(e) {
+            // Edit button
+            if (e.target.closest('.action-btn-sm.edit')) {
+                openEditUserModal();
+            }
+            
+            // Block/Unblock button
+            if (e.target.closest('.action-btn-sm.block')) {
+                if (confirm('Are you sure you want to block this user?')) {
+                    const row = e.target.closest('tr');
+                    const statusBadge = row.querySelector('.status-badge');
+                    const actionBtn = e.target.closest('.action-btn-sm');
+                    const profilePic = row.querySelector('.profile-pic');
+                    
+                    statusBadge.textContent = 'Blocked';
+                    statusBadge.className = 'status-badge status-blocked';
+                    actionBtn.className = 'action-btn-sm unblock';
+                    actionBtn.innerHTML = '<i class="fas fa-unlock"></i>';
+                    actionBtn.title = 'Unblock';
+                    profilePic.classList.add('blocked');
+                }
+            }
+            
+            if (e.target.closest('.action-btn-sm.unblock')) {
+                if (confirm('Are you sure you want to unblock this user?')) {
+                    const row = e.target.closest('tr');
+                    const statusBadge = row.querySelector('.status-badge');
+                    const actionBtn = e.target.closest('.action-btn-sm');
+                    const profilePic = row.querySelector('.profile-pic');
+                    
+                    statusBadge.textContent = 'Active';
+                    statusBadge.className = 'status-badge status-active';
+                    actionBtn.className = 'action-btn-sm block';
+                    actionBtn.innerHTML = '<i class="fas fa-ban"></i>';
+                    actionBtn.title = 'Block';
+                    profilePic.classList.remove('blocked');
+                }
+            }
+            
+            // View Activity button
+            if (e.target.closest('.action-btn-sm.view')) {
+                alert('View activity functionality would be implemented here');
+            }
+            
+            // Assign Pickup button
+            if (e.target.closest('.action-btn-sm.assign')) {
+                alert('Assign pickup functionality would be implemented here');
+            }
+            
+            // Verify KYC button
+            if (e.target.closest('.action-btn-sm.verify')) {
+                alert('KYC verification functionality would be implemented here');
+            }
+            
+            // Delete button
+            if (e.target.closest('.action-btn-sm.delete')) {
+                if (confirm('Are you sure you want to delete this collector? This action cannot be undone.')) {
+                    const row = e.target.closest('tr');
+                    row.remove();
+                }
+            }
+        });
+
+        // Form Submissions
+        document.getElementById('addUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('User would be added to the system');
+            closeAddUserModal();
+        });
+
+        document.getElementById('editUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('User profile would be updated');
+            closeEditUserModal();
+        });
+
+        // Pagination
+        document.querySelectorAll('.page-num').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.page-num').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Rows per page
+        document.querySelectorAll('.rows-per-page').forEach(select => {
+            select.addEventListener('change', function() {
+                alert(`Showing ${this.value} rows per page`);
+            });
+        });
+
+        // Bulk Actions
+        document.querySelectorAll('.bulk-action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const action = this.textContent.trim();
+                const checkedRows = document.querySelectorAll('.row-checkbox:checked').length;
+                
+                if (action.includes('Block')) {
+                    if (confirm(`Are you sure you want to block ${checkedRows} selected users?`)) {
+                        alert(`${checkedRows} users would be blocked`);
+                    }
+                } else if (action.includes('Export')) {
+                    alert(`Exporting data for ${checkedRows} selected items`);
+                } else if (action.includes('Verify')) {
+                    if (confirm(`Are you sure you want to verify ${checkedRows} selected collectors?`)) {
+                        alert(`${checkedRows} collectors would be verified`);
+                    }
+                }
+            });
+        });
+
+        // Close modals when clicking outside
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });        .mobile-overlay.active {
+            display: block;
+        }
+
+        /* User Management Styles */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .breadcrumb-item {
+            color: #7f8c8d;
+        }
+
+        .breadcrumb-item.active {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .page-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 15px;
+            color: #7f8c8d;
+            z-index: 1;
+        }
+
+        .search-input {
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #e0e6ed;
+            border-radius: 25px;
+            width: 300px;
+            background: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            width: 350px;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.3);
+        }
+
+        /* Tab System */
+        .tab-container {
+            margin-bottom: 30px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 5px;
+            background: #f8f9fa;
+            padding: 5px;
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #2c3e50;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .tab-count {
+            background: #e74c3c;
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .tab-btn.active .tab-count {
+            background: #2ecc71;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid #f1f3f4;
+            background: #fafbfc;
+        }
+
+        .table-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bulk-select {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .bulk-select input[type="checkbox"] {
+            display: none;
+        }
+
+        .checkmark {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .bulk-select input[type="checkbox"]:checked + .checkmark {
+            background: #2ecc71;
+            border-color: #2ecc71;
+        }
+
+        .bulk-select input[type="checkbox"]:checked + .checkmark:after {
+            content: '✓';
+            position: absolute;
+            top: -2px;
+            left: 2px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .bulk-action-btn {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .bulk-action-btn:enabled:hover {
+            background: #7f8c8d;
+            transform: translateY(-1px);
+        }
+
+        .bulk-action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .table-info {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        /* Data Table */
+        .data-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 15px;
+            background: #fafbfc;
+            border-bottom: 1px solid #f1f3f4;
+            font-weight: 600;
+            color: #555;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f8f9fa;
+            color: #555;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: rgba(248, 249, 250, 0.5);
+        }
+
+        .data-table tr:nth-child(even):hover {
+            background: #f1f3f4;
+        }
+
+        /* User Profile Cell */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .profile-pic.blocked {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .profile-pic.collector {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .user-details strong {
+            display: block;
+            font-size: 14px;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+
+        .user-details small {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+
+        /* Contact Info */
+        .contact-info div {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .contact-info small {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+
+        /* Address Info */
+        .address-info div {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .address-info small {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+
+        /* Vehicle Info */
+        .vehicle-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vehicle-info i {
+            color: #7f8c8d;
+        }
+
+        /* Zone Info */
+        .zone-info div {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .zone-info small {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+
+        /* Rating */
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stars {
+            color: #f39c12;
+            font-size: 12px;
+        }
+
+        .rating-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        /* Pickup Count & Points */
+        .pickup-count, .points {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        /* Status Badges */
+        .status-active { background: #d4edda; color: #155724; }
+        .status-blocked { background: #f8d7da; color: #721c24; }
+        .status-verified { background: #d1ecf1; color: #0c5460; }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn-sm {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn-sm.edit {
+            background: #3498db;
+            color: white;
+        }
+
+        .action-btn-sm.edit:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .action-btn-sm.block {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .action-btn-sm.block:hover {
+            background: #c0392b;
+            transform: translateY(-1px);
+        }
+
+        .action-btn-sm.unblock {
+            background: #27ae60;
+            color: white;
+        }
+
+        .action-btn-sm.unblock:hover {
+            background: #229954;
+            transform: translateY(-1px);
+        }
+
+        .action-btn-sm.view {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .action-btn-sm.view:hover {
+            background: #7f8c8d;
+            transform: translateY(-1px);
+        }
+
+        .action-btn-sm.assign {
+            background: #f39c12;
+            color: white;
+        }
+
+        .action-btn-sm.assign:hover {
+            background: #e67e22;
+            transform: translateY(-1px);
+        }
+
+        .action-btn-sm.verify {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .action-btn-sm.verify:hover {
+            background: #8e44ad;
+            transform: translateY(-1px);
+        }
+
+        .action-btn-sm.delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .action-btn-sm.delete:hover {
+            background: #c0392b;
+            transform: translateY(-1px);
+        }
+
+        .action-btn-sm:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .action-btn-sm:disabled:hover {
+            transform: none;
+        }
+
+        /* Pagination */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background: #fafbfc;
+            border-top: 1px solid #f1f3f4;
+        }
+
+        .pagination-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .rows-per-page {
+            padding: 6px 10px;
+            border: 1px solid #e0e6ed;
+            border-radius: 6px;
+            background: white;
+            font-size: 13px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .page-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #e0e6ed;
+            background: white;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: #f8f9fa;
+            border-color: #3498db;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-numbers {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 0 10px;
+        }
+
+        .page-num {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #e0e6ed;
+            background: white;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .page-num:hover {
+            background: #f8f9fa;
+            border-color: #3498db;
+        }
+
+        .page-num.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        /* Checkbox Styles */
+        .header-checkbox, .row-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: #f8f9fa;
+            color: #e74c3c;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #f1f3f4;
+        }
+
+        .btn-cancel {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        /* User Management Styles */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #7f8c<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoWaste Admin Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafb;
+            color: #2c3e50;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 28px;
+        }
+
+        .collapse-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+            margin-left: auto;
+        }
+
+        .collapse-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            gap: 15px;
+            font-weight: 500;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border-right: 4px solid #fff;
+        }
+
+        .menu-item i {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar.collapsed .menu-item span {
+            display: none;
+        }
+
+        .sidebar.collapsed .logo span {
+            display: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 70px;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 25px;
+            transition: background 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: #f8f9fa;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-info h4 {
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .user-info p {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 30px;
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: #7f8c8d;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .card-icon.pickups { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .card-icon.waste { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .card-icon.users { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .card-icon.rewards { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .card-trend {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        /* Analytics Section */
+        .analytics-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-wrapper {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .chart-filter {
+            padding: 8px 15px;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            background: white;
+            color: #555;
+            font-size: 13px;
+        }
+
+        /* Recent Activity Table */
+        .recent-activity {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .activity-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .activity-table th {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 2px solid #f1f3f4;
+            font-weight: 600;
+            color: #555;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .activity-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f8f9fa;
+            color: #555;
+        }
+
+        .activity-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-completed { background: #d4edda; color: #155724; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-assigned { background: #cce5ff; color: #004085; }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 5px;
+        }
+
+        .btn-assign {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-assign:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .btn-view {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #7f8c8d;
+            transform: translateY(-1px);
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .top-nav,
+        body.dark-mode .summary-card,
+        body.dark-mode .chart-container,
+        body.dark-mode .recent-activity {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .nav-title,
+        body.dark-mode .chart-title,
+        body.dark-mode .card-value {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .activity-table th,
+        body.dark-mode .activity-table td {
+            color: #b0b0b0;
+            border-color: #404040;
+        }
+
+        body.dark-mode .activity-table tr:hover {
+            background: #404040;
+        }
+
+        /* Dark Mode for User Management */
+        body.dark-mode .table-container,
+        body.dark-mode .modal-content {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .data-table th {
+            background: #404040;
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .data-table tr:nth-child(even) {
+            background: rgba(64, 64, 64, 0.3);
+        }
+
+        body.dark-mode .data-table tr:hover {
+            background: #404040;
+        }
+
+        body.dark-mode .search-input,
+        body.dark-mode .form-input,
+        body.dark-mode .form-select {
+            background: #404040;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+
+        body.dark-mode .tab-buttons {
+            background: #404040;
+        }
+
+        body.dark-mode .tab-btn.active {
+            background: #2d2d2d;
+        }
+
+        body.dark-mode .table-header,
+        body.dark-mode .pagination-container {
+            background: #404040;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .analytics-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+            }
+
+            .top-nav {
+                padding: 15px 20px;
+            }
+
+            .nav-title {
+                font-size: 22px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .analytics-section {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .chart-container {
+                height: 300px;
+                padding: 20px;
+            }
+
+            .summary-cards {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .summary-card {
+                padding: 20px;
+            }
+
+            .card-value {
+                font-size: 24px;
+            }
+
+            .dashboard-content {
+                padding: 15px;
+            }
+
+            .recent-activity {
+                padding: 15px;
+                overflow-x: auto;
+            }
+
+            .activity-table {
+                min-width: 600px;
+            }
+
+            .activity-table th,
+            .activity-table td {
+                padding: 10px;
+                font-size: 13px;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                background: none;
+                border: none;
+                color: #2c3e50;
+                font-size: 20px;
+                cursor: pointer;
+                padding: 5px;
+                border-radius: 5px;
+                margin-right: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .top-nav {
+                padding: 10px 15px;
+            }
+
+            .nav-title {
+                font-size: 18px;
+            }
+
+            .chart-container {
+                height: 250px;
+                padding: 15px;
+            }
+
+            .chart-title {
+                font-size: 16px;
+            }
+
+            .user-avatar {
+                width: 35px;
+                height: 35px;
+            }
+
+            .dark-mode-toggle {
+                width: 45px;
+                height: 45px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        .mobile-menu-btn {
+            display: none;
+        }
+
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .mobile-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-leaf"></i>
+                    <span>EcoWaste</span>
+                </div>
+                <button class="collapse-btn" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-truck"></i>
+                    <span>Pickup Requests</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-recycle"></i>
+                    <span>Waste Analysis</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-coins"></i>
+                    <span>Reward System</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-handshake"></i>
+                    <span>Partners</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Top Navigation -->
+            <div class="top-nav">
+                <div style="display: flex; align-items: center;">
+                    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="nav-title">Dashboard Overview</h1>
+                </div>
+                <div class="user-profile">
+                    <div class="user-avatar">AM</div>
+                    <div class="user-info">
+                        <h4>Admin Manager</h4>
+                        <p>Super Admin</p>
+                    </div>
+                    <i class="fas fa-chevron-down" style="margin-left: 10px; color: #7f8c8d;"></i>
+                </div>
+            </div>
+
+            <!-- User Management Content -->
+            <div class="dashboard-content" id="userManagementContent" style="display: none;">
+                <!-- Breadcrumbs & Header -->
+                <div class="page-header">
+                    <div class="breadcrumbs">
+                        <span class="breadcrumb-item">Admin Dashboard</span>
+                        <i class="fas fa-chevron-right"></i>
+                        <span class="breadcrumb-item active">User Management</span>
+                    </div>
+                    <div class="page-actions">
+                        <div class="search-container">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search by name, phone, or location..." class="search-input">
+                        </div>
+                        <button class="add-btn" onclick="openAddUserModal()">
+                            <i class="fas fa-plus"></i>
+                            Add New User/Collector
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab System -->
+                <div class="tab-container">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" onclick="switchTab('users')">
+                            <i class="fas fa-users"></i>
+                            Registered Users
+                            <span class="tab-count">1,240</span>
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('collectors')">
+                            <i class="fas fa-truck"></i>
+                            Verified Collectors
+                            <span class="tab-count">45</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="table-container" id="usersTable">
+                    <div class="table-header">
+                        <div class="table-actions">
+                            <label class="bulk-select">
+                                <input type="checkbox" id="selectAll">
+                                <span class="checkmark"></span>
+                                Select All
+                            </label>
+                            <button class="bulk-action-btn" disabled>
+                                <i class="fas fa-ban"></i>
+                                Block Selected
+                            </button>
+                            <button class="bulk-action-btn" disabled>
+                                <i class="fas fa-download"></i>
+                                Export Data
+                            </button>
+                        </div>
+                        <div class="table-info">
+                            <span>Showing 1-10 of 1,240 users</span>
+                        </div>
+                    </div>
+
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" class="header-checkbox"></th>
+                                    <th>User</th>
+                                    <th>Contact</th>
+                                    <th>Address</th>
+                                    <th>Total Pickups</th>
+                                    <th>Reward Points</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" class="row-checkbox"></td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <div class="profile-pic">RA</div>
+                                            <div class="user-details">
+                                                <strong>Rashid Ahmed</strong>
+                                                <small>Household</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="contact-info">
+                                            <div>+880 1712-345678</div>
+                                            <small>rashid@email.com</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="address-info">
+                                            <div>Gulshan-2</div>
+                                            <small>Dhaka</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="pickup-count">23</span></td>
+                                    <td><span class="points">1,450</span></td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-sm edit" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-sm block" title="Block">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                            <button class="action-btn-sm view" title="View Activity">
+                                                <i class="fas fa-chart-bar"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="row-checkbox"></td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <div class="profile-pic">FK</div>
+                                            <div class="user-details">
+                                                <strong>Fatima Khan</strong>
+                                                <small>Business</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="contact-info">
+                                            <div>+880 1687-912345</div>
+                                            <small>fatima@business.com</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="address-info">
+                                            <div>Dhanmondi-15</div>
+                                            <small>Dhaka</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="pickup-count">45</span></td>
+                                    <td><span class="points">2,890</span></td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-sm edit" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-sm block" title="Block">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                            <button class="action-btn-sm view" title="View Activity">
+                                                <i class="fas fa-chart-bar"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="row-checkbox"></td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <div class="profile-pic blocked">MI</div>
+                                            <div class="user-details">
+                                                <strong>Mohammad Islam</strong>
+                                                <small>Household</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="contact-info">
+                                            <div>+880 1534-567890</div>
+                                            <small>mohammad@email.com</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="address-info">
+                                            <div>Uttara-10</div>
+                                            <small>Dhaka</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="pickup-count">8</span></td>
+                                    <td><span class="points">340</span></td>
+                                    <td><span class="status-badge status-blocked">Blocked</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-sm edit" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-sm unblock" title="Unblock">
+                                                <i class="fas fa-unlock"></i>
+                                            </button>
+                                            <button class="action-btn-sm view" title="View Activity">
+                                                <i class="fas fa-chart-bar"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="row-checkbox"></td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <div class="profile-pic">SA</div>
+                                            <div class="user-details">
+                                                <strong>Sabrina Akter</strong>
+                                                <small>Household</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="contact-info">
+                                            <div>+880 1923-456789</div>
+                                            <small>sabrina@email.com</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="address-info">
+                                            <div>Bashundhara R/A</div>
+                                            <small>Dhaka</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="pickup-count">31</span></td>
+                                    <td><span class="points">1,890</span></td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-sm edit" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-sm block" title="Block">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                            <button class="action-btn-sm view" title="View Activity">
+                                                <i class="fas fa-chart-bar"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="row-checkbox"></td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <div class="profile-pic">KR</div>
+                                            <div class="user-details">
+                                                <strong>Karim Rahman</strong>
+                                                <small>Business</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="contact-info">
+                                            <div>+880 1456-789012</div>
+                                            <small>karim@business.com</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="address-info">
+                                            <div>Motijheel</div>
+                                            <small>Dhaka</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="pickup-count">67</span></td>
+                                    <td><span class="points">4,120</span></td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-sm edit" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-sm block" title="Block">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                            <button class="action-btn-sm view" title="View Activity">
+                                                <i class="fas fa-chart-bar"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination-container">
+                        <div class="pagination-info">
+                            <select class="rows-per-page">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span>rows per page</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="page-btn" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span class="page-numbers">
+                                <button class="page-num active">1</button>
+                                <button class="page-num">2</button>
+                                <button class="page-num">3</button>
+                                <span>...</span>
+                                <button class="page-num">124</button>
+                            </span>
+                            <button class="page-btn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collectors Table -->
+                <div class="table-container" id="collectorsTable" style="display: none;">
+                    <div class="table-header">
+                        <div class="table-actions">
+                            <label class="bulk-select">
+                                <input type="checkbox" id="selectAllCollectors">
+                                <span class="checkmark"></span>
+                                Select All
+                            </label>
+                            <button class="bulk-action-btn" disabled>
+                                <i class="fas fa-check"></i>
+                                Verify Selected
+                            </button>
+                            <button class="bulk-action-btn" disabled>
+                                <i class="fas fa-download"></i>
+                                Export Data
+                            </button>
+                        </div>
+                        <div class="table-info">
+                            <span>Showing 1-10 of 45 collectors</span>
+                        </div>
+                    </div>
+
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" class="header-checkbox"></th>
+                                    <th>Collector</th>
+                                    <th>Vehicle Type</th>
+                                    <th>Assigned Zone</th>
+                                    <th>Rating</th>
+                                    <th>KYC Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" class="row-checkbox"></td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <div class="profile-pic collector">AB</div>
+                                            <div class="user-details">
+                                                <strong>Abdul Barik</strong>
+                                                <small>ID: COL001</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="vehicle-info">
+                                            <i class="fas fa-motorcycle"></i>
+                                            <span>Bike</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="zone-info">
+                                            <div>Gulshan-Banani</div>
+                                            <small>Zone A</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="rating">
+                                            <span class="stars">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </span>
+                                            <span class="rating-value">4.8</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge status-verified">Verified</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-sm assign" title="Assign Pickup">
+                                                <i class="fas fa-truck"></i>
+                                            </button>
+                                            <button class="action-btn-sm verify" title="View KYC">
+                                                <i class="fas fa-check-circle"></i>
+                                            </button>
+                                            <button class="action-btn-sm delete" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="row-checkbox"></td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <div class="profile-pic collector">MR</div>
+                                            <div class="user-details">
+                                                <strong>Mizanur Rahman</strong>
+                                                <small>ID: COL002</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="vehicle-info">
+                                            <i class="fas fa-truck"></i>
+                                            <span>Truck</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="zone-info">
+                                            <div>Dhanmondi-Lalmatia</div>
+                                            <small>Zone B</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="rating">
+                                            <span class="stars">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="far fa-star"></i>
+                                            </span>
+                                            <span class="rating-value">4.2</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-sm assign" title="Assign Pickup" disabled>
+                                                <i class="fas fa-truck"></i>
+                                            </button>
+                                            <button class="action-btn-sm verify" title="Verify KYC">
+                                                <i class="fas fa-hourglass-half"></i>
+                                            </button>
+                                            <button class="action-btn-sm delete" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="row-checkbox"></td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <div class="profile-pic collector">NH</div>
+                                            <div class="user-details">
+                                                <strong>Nasir Hossain</strong>
+                                                <small>ID: COL003</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="vehicle-info">
+                                            <i class="fas fa-truck"></i>
+                                            <span>Van</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="zone-info">
+                                            <div>Uttara-Mirpur</div>
+                                            <small>Zone C</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="rating">
+                                            <span class="stars">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </span>
+                                            <span class="rating-value">4.9</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge status-verified">Verified</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-sm assign" title="Assign Pickup">
+                                                <i class="fas fa-truck"></i>
+                                            </button>
+                                            <button class="action-btn-sm verify" title="View KYC">
+                                                <i class="fas fa-check-circle"></i>
+                                            </button>
+                                            <button class="action-btn-sm delete" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination-container">
+                        <div class="pagination-info">
+                            <select class="rows-per-page">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span>rows per page</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="page-btn" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span class="page-numbers">
+                                <button class="page-num active">1</button>
+                                <button class="page-num">2</button>
+                                <button class="page-num">3</button>
+                                <button class="page-num">4</button>
+                                <button class="page-num">5</button>
+                            </span>
+                            <button class="page-btn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>>
+
+                <!-- Users Table -->
+                <div class="table-container" id="usersTable">
+                    <div class="table-header">
+                        <div class="table-actions">
+                            <label class="bulk-select">
+                                <input type="checkbox" id="selectAll">
+                                <span class="checkmark"></span>
+                                Select All
+                            </label>
+                            <button class="bulk-action-btn" disabled>
+                                <i class="fas fa-ban"></i>
+                                Block Selected
+                            </button>
+                            <button class="bulk-action-btn" disabled>
+                                <i class="fas fa-download"></i>
+                                Export Data
+                            </button>
+                        </div>
+                        <div class="table-info">
+                            <span>Showing 1-10 of 1,240 users</span>
+                        </div>
+                    </div>
+
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" class="header-checkbox"></th>
+                                    <th>User</th>
+                                    <th>Contact</th>
+                                    <th>Address</th>
+                                    <th>Total Pickups</th>
+                                    <th>Reward Points</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" class="row-checkbox"></td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <div class="profile-pic">RA</div>
+                                            <div class="user-details">
+                                                <strong>Rashid Ahmed</strong>
+                                                <small>Household</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="contact-info">
+                                            <div>+880 1712-345678</div>
+                                            <small>rashid@email.com</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="address-info">
+                                            <div>Gulshan-2</div>
+                                            <small>Dhaka</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="pickup-count">23</span></td>
+                                    <td><span class="points">1,450</span></td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-sm edit" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-sm block" title="Block">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                            <button class="action-btn-sm view" title="View Activity">
+                                                <i class="fas fa-chart-bar"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="row-checkbox"></td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <div class="profile-pic">FK</div>
+                                            <div class="user-details">
+                                                <strong>Fatima Khan</strong>
+                                                <small>Business</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="contact-info">
+                                            <div>+880 1687-912345</div>
+                                            <small>fatima@business.com</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="address-info">
+                                            <div>Dhanmondi-15</div>
+                                            <small>Dhaka</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="pickup-count">45</span></td>
+                                    <td><span class="points">2,890</span></td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-sm edit" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-sm block" title="Block">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                            <button class="action-btn-sm view" title="View Activity">
+                                                <i class="fas fa-chart-bar"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="row-checkbox"></td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <div class="profile-pic blocked">MI</div>
+                                            <div class="user-details">
+                                                <strong>Mohammad Islam</strong>
+                                                <small>Household</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="contact-info">
+                                            <div>+880 1534-567890</div>
+                                            <small>mohammad@email.com</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="address-info">
+                                            <div>Uttara-10</div>
+                                            <small>Dhaka</small>
+                                        </div>
+                                    </td>
+                                    <td><span class="pickup-count">8</span></td>
+                                    <td><span class="points">340</span></td>
+                                    <td><span class="status-badge status-blocked">Blocked</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-sm edit" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-sm unblock" title="Unblock">
+                                                <i class="fas fa-unlock"></i>
+                                            </button>
+                                            <button class="action-btn-sm view" title="View Activity">
+                                                <i class="fas fa-chart-bar"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination-container">
+                        <div class="pagination-info">
+                            <select class="rows-per-page">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span>rows per page</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="page-btn" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span class="page-numbers">
+                                <button class="page-num active">1</button>
+                                <button class="page-num">2</button>
+                                <button class="page-num">3</button>
+                                <span>...</span>
+                                <button class="page-num">124</button>
+                            </span>
+                            <button class="page-btn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collectors Table -->
+                <div class="table-container" id="collectorsTable" style="display: none;">
+                    <div class="table-header">
+                        <div class="table-actions">
+                            <label class="bulk-select">
+                                <input type="checkbox" id="selectAllCollectors">
+                                <span class="checkmark"></span>
+                                Select All
+                            </label>
+                            <button class="bulk-action-btn" disabled>
+                                <i class="fas fa-check"></i>
+                                Verify Selected
+                            </button>
+                            <button class="bulk-action-btn" disabled>
+                                <i class="fas fa-download"></i>
+                                Export Data
+                            </button>
+                        </div>
+                        <div class="table-info">
+                            <span>Showing 1-10 of 45 collectors</span>
+                        </div>
+                    </div>
+
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" class="header-checkbox"></th>
+                                    <th>Collector</th>
+                                    <th>Vehicle Type</th>
+                                    <th>Assigned Zone</th>
+                                    <th>Rating</th>
+                                    <th>KYC Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" class="row-checkbox"></td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <div class="profile-pic collector">AB</div>
+                                            <div class="user-details">
+                                                <strong>Abdul Barik</strong>
+                                                <small>ID: COL001</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="vehicle-info">
+                                            <i class="fas fa-motorcycle"></i>
+                                            <span>Bike</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="zone-info">
+                                            <div>Gulshan-Banani</div>
+                                            <small>Zone A</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="rating">
+                                            <span class="stars">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </span>
+                                            <span class="rating-value">4.8</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge status-verified">Verified</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-sm assign" title="Assign Pickup">
+                                                <i class="fas fa-truck"></i>
+                                            </button>
+                                            <button class="action-btn-sm verify" title="View KYC">
+                                                <i class="fas fa-check-circle"></i>
+                                            </button>
+                                            <button class="action-btn-sm delete" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="row-checkbox"></td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <div class="profile-pic collector">MR</div>
+                                            <div class="user-details">
+                                                <strong>Mizanur Rahman</strong>
+                                                <small>ID: COL002</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="vehicle-info">
+                                            <i class="fas fa-truck"></i>
+                                            <span>Truck</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="zone-info">
+                                            <div>Dhanmondi-Lalmatia</div>
+                                            <small>Zone B</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="rating">
+                                            <span class="stars">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="far fa-star"></i>
+                                            </span>
+                                            <span class="rating-value">4.2</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn-sm assign" title="Assign Pickup" disabled>
+                                                <i class="fas fa-truck"></i>
+                                            </button>
+                                            <button class="action-btn-sm verify" title="Verify KYC">
+                                                <i class="fas fa-hourglass-half"></i>
+                                            </button>
+                                            <button class="action-btn-sm delete" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination-container">
+                        <div class="pagination-info">
+                            <select class="rows-per-page">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span>rows per page</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="page-btn" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span class="page-numbers">
+                                <button class="page-num active">1</button>
+                                <button class="page-num">2</button>
+                                <button class="page-num">3</button>
+                                <button class="page-num">4</button>
+                                <button class="page-num">5</button>
+                            </span>
+                            <button class="page-btn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+
+    <!-- Dark Mode Toggle -->
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Add User/Collector Modal -->
+    <div class="modal-overlay" id="addUserModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New User/Collector</h3>
+                <button class="modal-close" onclick="closeAddUserModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addUserForm">
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select class="form-select" id="userRole" onchange="toggleRoleFields()">
+                        <option value="user">User (Household/Business)</option>
+                        <option value="collector">Collector</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" placeholder="Enter full name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-input" placeholder="+880 1XXX-XXXXXX" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" placeholder="Enter email address">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-input" placeholder="Enter full address" required>
+                </div>
+                <div class="form-group" id="userTypeGroup">
+                    <label class="form-label">User Type</label>
+                    <select class="form-select">
+                        <option value="household">Household</option>
+                        <option value="business">Business</option>
+                    </select>
+                </div>
+                <div class="form-group" id="vehicleGroup" style="display: none;">
+                    <label class="form-label">Vehicle Type</label>
+                    <select class="form-select">
+                        <option value="bike">Bike</option>
+                        <option value="truck">Truck</option>
+                        <option value="van">Van</option>
+                    </select>
+                </div>
+                <div class="form-group" id="zoneGroup" style="display: none;">
+                    <label class="form-label">Assigned Zone</label>
+                    <select class="form-select">
+                        <option value="zone-a">Zone A (Gulshan-Banani)</option>
+                        <option value="zone-b">Zone B (Dhanmondi-Lalmatia)</option>
+                        <option value="zone-c">Zone C (Uttara-Mirpur)</option>
+                        <option value="zone-d">Zone D (Old Dhaka)</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeAddUserModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal-overlay" id="editUserModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit User Profile</h3>
+                <button class="modal-close" onclick="closeEditUserModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editUserForm">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" value="Rashid Ahmed" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-input" value="+880 1712-345678" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" value="rashid@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-input" value="Gulshan-2, Dhaka" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">User Type</label>
+                    <select class="form-select">
+                        <option value="household" selected>Household</option>
+                        <option value="business">Business</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditUserModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        }
+
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+        }
+
+        // Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.dark-mode-toggle i');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                icon.className = 'fas fa-sun';
+            } else {
+                icon.className = 'fas fa-moon';
+            }
+        }
+
+        // Menu Item Active State
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Initialize Charts (only for dashboard, removed since we don't need dashboard)
+        // Chart initialization removed since we're focusing on User Management only
+
+        // Action Button Handlers (removed old dashboard handlers)
+        // User Management Action Handlers only
+
+        // Add some interactive animations (removed dashboard card animations)
+        // User Management specific animations only
+    </script>
+</body>
+</html>
