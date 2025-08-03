@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reward System - EcoWaste Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafb;
+            color: #2c3e50;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 28px;
+        }
+
+        .collapse-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+            margin-left: auto;
+        }
+
+        .collapse-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            gap: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border-right: 4px solid #fff;
+        }
+
+        .menu-item i {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar.collapsed .menu-item span {
+            display: none;
+        }
+
+        .sidebar.collapsed .logo span {
+            display: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 70px;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 25px;
+            transition: background 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: #f8f9fa;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-info h4 {
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .user-info p {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 30px;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .breadcrumb-item {
+            color: #7f8c8d;
+        }
+
+        .breadcrumb-item.active {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.3);
+        }
+
+        .secondary-btn {
+            background: white;
+            color: #2c3e50;
+            border: 2px solid #e0e6ed;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-btn:hover {
+            border-color: #3498db;
+            color: #3498db;
+        }
+
+        /* Tab System */
+        .tab-container {
+            margin-bottom: 30px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 5px;
+            background: #f8f9fa;
+            padding: 5px;
+            border-radius: 12px;
+            width: fit-content;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #2c3e50;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .stat-icon.points { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .stat-icon.users { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .stat-icon.vouchers { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .stat-icon.donations { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-change.positive {
+            color: #27ae60;
+        }
+
+        .stat-change.negative {
+            color: #e74c3c;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .main-panel {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-header {
+            background: #fafbfc;
+            padding: 20px 25px;
+            border-bottom: 1px solid #f1f3f4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .panel-content {
+            padding: 25px;
+        }
+
+        /* Data Table */
+        .data-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 15px;
+            background: #fafbfc;
+            border-bottom: 1px solid #f1f3f4;
+            font-weight: 600;
+            color: #555;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f8f9fa;
+            color: #555;
+            vertical-align: middle;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* User Profile Cell */
+        .user-profile-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-details strong {
+            display: block;
+            font-size: 14px;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+
+        .user-details small {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active { background: #d4edda; color: #155724; }
+        .status-inactive { background: #f8d7da; color: #721c24; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-redeemed { background: #d1ecf1; color: #0c5460; }
+
+        /* Points Display */
+        .points-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #f39c12;
+        }
+
+        .points-display i {
+            font-size: 16px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn-sm {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn-sm.edit {
+            background: #3498db;
+            color: white;
+        }
+
+        .action-btn-sm.edit:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .action-btn-sm.delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .action-btn-sm.delete:hover {
+            background: #c0392b;
+            transform: translateY(-1px);
+        }
+
+        .action-btn-sm.view {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .action-btn-sm.view:hover {
+            background: #7f8c8d;
+            transform: translateY(-1px);
+        }
+
+        /* Reward Cards */
+        .reward-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid #2ecc71;
+            transition: all 0.3s ease;
+        }
+
+        .reward-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .reward-card.voucher {
+            border-left-color: #9b59b6;
+        }
+
+        .reward-card.tax {
+            border-left-color: #3498db;
+        }
+
+        .reward-card.donation {
+            border-left-color: #e74c3c;
+        }
+
+        .reward-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .reward-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .reward-points {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f39c12;
+        }
+
+        .reward-description {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: #f8f9fa;
+            color: #e74c3c;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #f1f3f4;
+        }
+
+        .btn-cancel {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        /* Quick Actions */
+        .quick-action {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quick-action-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quick-action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .quick-action-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .quick-action-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action-btn:hover {
+            background: #2980b9;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+                width: 280px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+            }
+
+            .dashboard-content {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                background: none;
+                border: none;
+                color: #2c3e50;
+                font-size: 20px;
+                cursor: pointer;
+                padding: 5px;
+                border-radius: 5px;
+                margin-right: 15px;
+            }
+
+            .mobile-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 999;
+            }
+
+            .mobile-overlay.active {
+                display: block;
+            }
+        }
+
+        .mobile-menu-btn {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-leaf"></i>
+                    <span>EcoWaste</span>
+                </div>
+                <button class="collapse-btn" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <nav class="sidebar-menu">
+                <div class="menu-item" onclick="loadPage('dashboard')">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" onclick="loadPage('user-management')">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </div>
+                <div class="menu-item" onclick="loadPage('pickup-requests')">
+                    <i class="fas fa-truck"></i>
+                    <span>Pickup Requests</span>
+                </div>
+                <div class="menu-item" onclick="loadPage('waste-analysis')">
+                    <i class="fas fa-recycle"></i>
+                    <span>Waste Analysis</span>
+                </div>
+                <div class="menu-item active">
+                    <i class="fas fa-coins"></i>
+                    <span>Reward System</span>
+                </div>
+                <div class="menu-item" onclick="loadPage('partners')">
+                    <i class="fas fa-handshake"></i>
+                    <span>Partners</span>
+                </div>
+                <div class="menu-item" onclick="loadPage('reports')">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Reports</span>
+                </div>
+                <div class="menu-item" onclick="loadPage('settings')">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Top Navigation -->
+            <div class="top-nav">
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="nav-title">Reward System</h1>
+                <div class="user-profile">
+                    <div class="user-avatar">AD</div>
+                    <div class="user-info">
+                        <h4>Admin User</h4>
+                        <p>Administrator</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div class="breadcrumbs">
+                        <span class="breadcrumb-item">Admin</span>
+                        <span class="breadcrumb-item active">Reward System</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="secondary-btn" onclick="openRewardModal('points')">
+                            <i class="fas fa-cog"></i>
+                            Configure Points
+                        </button>
+                        <button class="add-btn" onclick="openRewardModal('reward')">
+                            <i class="fas fa-plus"></i>
+                            Add Reward
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon points">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="totalPoints">2,847,392</div>
+                        <div class="stat-label">Total Points Distributed</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>18% from last month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon users">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="activeUsers">1,247</div>
+                        <div class="stat-label">Active Reward Users</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>12% from last month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon vouchers">
+                                <i class="fas fa-ticket-alt"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="redeemedVouchers">892</div>
+                        <div class="stat-label">Vouchers Redeemed</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>24% from last month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon donations">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="totalDonations">$15,683</div>
+                        <div class="stat-label">Social Welfare Donations</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>31% from last month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab System -->
+                <div class="tab-container">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" onclick="switchTab('overview')" data-tab="overview">
+                            <i class="fas fa-chart-line"></i>
+                            Overview
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('vouchers')" data-tab="vouchers">
+                            <i class="fas fa-ticket-alt"></i>
+                            Voucher System
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('tax')" data-tab="tax">
+                            <i class="fas fa-calculator"></i>
+                            Tax Reduction
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('donations')" data-tab="donations">
+                            <i class="fas fa-heart"></i>
+                            Social Welfare
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('users')" data-tab="users">
+                            <i class="fas fa-users"></i>
+                            User Points
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Content Based on Active Tab -->
+                <div class="content-grid">
+                    <!-- Main Content Panel -->
+                    <div class="main-panel">
+                        <!-- Overview Tab Content -->
+                        <div id="overview-content" class="tab-content active">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Reward System Overview</h3>
+                            </div>
+                            <div class="panel-content">
+                                <div class="stats-grid" style="margin-bottom: 0;">
+                                    <div class="reward-card">
+                                        <div class="reward-header">
+                                            <div class="reward-title">Point Conversion Rate</div>
+                                            <div class="reward-points">1kg = 10 points</div>
+                                        </div>
+                                        <div class="reward-description">
+                                            Current rate for waste-to-points conversion across all categories
+                                        </div>
+                                    </div>
+                                    <div class="reward-card voucher">
+                                        <div class="reward-header">
+                                            <div class="reward-title">Active Partner Stores</div>
+                                            <div class="reward-points">47 stores</div>
+                                        </div>
+                                        <div class="reward-description">
+                                            Partner retailers offering discount vouchers for reward points
+                                        </div>
+                                    </div>
+                                    <div class="reward-card tax">
+                                        <div class="reward-header">
+                                            <div class="reward-title">Tax Reduction Rate</div>
+                                            <div class="reward-points">$0.01/point</div>
+                                        </div>
+                                        <div class="reward-description">
+                                            Government approved rate for tax reduction using reward points
+                                        </div>
+                                    </div>
+                                    <div class="reward-card donation">
+                                        <div class="reward-header">
+                                            <div class="reward-title">Charity Partners</div>
+                                            <div class="reward-points">12 organizations</div>
+                                        </div>
+                                        <div class="reward-description">
+                                            Social welfare organizations accepting point donations
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Points Management Tab Content -->
+                        <div id="points-content" class="tab-content">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Points Configuration</h3>
+                                <button class="add-btn" onclick="openPointsConfigModal()">
+                                    <i class="fas fa-edit"></i>
+                                    Edit Rates
+                                </button>
+                            </div>
+                            <div class="panel-content">
+                                <div class="data-table-wrapper">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Waste Type</th>
+                                                <th>Points per KG</th>
+                                                <th>Bonus Multiplier</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="pointsTableBody">
+                                            <!-- Points table will be populated by JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vouchers Tab Content -->
+                        <div id="vouchers-content" class="tab-content">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Discount Vouchers</h3>
+                                <button class="add-btn" onclick="openVoucherModal('add')">
+                                    <i class="fas fa-plus"></i>
+                                    Add Voucher
+                                </button>
+                            </div>
+                            <div class="panel-content">
+                                <div class="data-table-wrapper">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Store/Partner</th>
+                                                <th>Discount</th>
+                                                <th>Points Required</th>
+                                                <th>Valid Until</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="vouchersTableBody">
+                                            <!-- Vouchers table will be populated by JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tax Reduction Tab Content -->
+                        <div id="tax-content" class="tab-content">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Tax Reduction Program</h3>
+                                <button class="add-btn" onclick="openTaxConfigModal()">
+                                    <i class="fas fa-calculator"></i>
+                                    Configure Rates
+                                </button>
+                            </div>
+                            <div class="panel-content">
+                                <div class="stats-grid" style="margin-bottom: 20px;">
+                                    <div class="reward-card tax">
+                                        <div class="reward-header">
+                                            <div class="reward-title">Current Tax Rate</div>
+                                            <div class="reward-points">$0.01/point</div>
+                                        </div>
+                                        <div class="reward-description">
+                                            Each point reduces tax liability by $0.01
+                                        </div>
+                                    </div>
+                                    <div class="reward-card tax">
+                                        <div class="reward-header">
+                                            <div class="reward-title">Maximum Reduction</div>
+                                            <div class="reward-points">25% of total</div>
+                                        </div>
+                                        <div class="reward-description">
+                                            Maximum percentage of tax that can be reduced
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="data-table-wrapper">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>User</th>
+                                                <th>Points Used</th>
+                                                <th>Tax Reduction</th>
+                                                <th>Date Applied</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div class="user-profile-cell">
+                                                        <div class="profile-pic">JD</div>
+                                                        <div class="user-details">
+                                                            <strong>John Doe</strong>
+                                                            <small>john.doe@email.com</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="points-display">
+                                                        <i class="fas fa-coins"></i>
+                                                        <span>2,500 points</span>
+                                                    </div>
+                                                </td>
+                                                <td><strong>$25.00</strong></td>
+                                                <td>Nov 15, 2024</td>
+                                                <td><span class="status-badge status-redeemed">Applied</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Donations Tab Content -->
+                        <div id="donations-content" class="tab-content">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Social Welfare Donations</h3>
+                                <button class="add-btn" onclick="openCharityModal('add')">
+                                    <i class="fas fa-plus"></i>
+                                    Add Charity Partner
+                                </button>
+                            </div>
+                            <div class="panel-content">
+                                <div class="data-table-wrapper">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Charity Organization</th>
+                                                <th>Conversion Rate</th>
+                                                <th>Total Donated</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div class="user-profile-cell">
+                                                        <div class="profile-pic" style="background: #e74c3c;">
+                                                            <i class="fas fa-heart"></i>
+                                                        </div>
+                                                        <div class="user-details">
+                                                            <strong>Children's Education Fund</strong>
+                                                            <small>Supporting underprivileged children</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>$0.008/point</td>
+                                                <td><strong>$4,267</strong></td>
+                                                <td><span class="status-badge status-active">Active</span></td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <button class="action-btn-sm view" onclick="viewCharityDetails('children-fund')" title="View Details">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        <button class="action-btn-sm edit" onclick="editCharity('children-fund')" title="Edit">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Users Tab Content -->
+                        <div id="users-content" class="tab-content">
+                            <div class="panel-header">
+                                <h3 class="panel-title">User Points Balance</h3>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="text" placeholder="Search users..." id="userSearchInput" style="padding: 8px 12px; border: 1px solid #e0e6ed; border-radius: 6px;">
+                                    <button class="secondary-btn" onclick="searchUsers()">
+                                        <i class="fas fa-search"></i>
+                                        Search
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="panel-content">
+                                <div class="data-table-wrapper">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>User</th>
+                                                <th>Current Points</th>
+                                                <th>Points Earned</th>
+                                                <th>Points Redeemed</th>
+                                                <th>Last Activity</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="usersTableBody">
+                                            <!-- Users table will be populated by JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Side Panel -->
+                    <div class="side-panel">
+                        <!-- Quick Actions -->
+                        <div class="main-panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Quick Actions</h3>
+                            </div>
+                            <div class="panel-content">
+                                <div class="quick-action">
+                                    <div class="quick-action-info">
+                                        <div class="quick-action-icon" style="background: #f39c12;">
+                                            <i class="fas fa-plus"></i>
+                                        </div>
+                                        <div class="quick-action-text">Bulk Points Award</div>
+                                    </div>
+                                    <button class="quick-action-btn" onclick="openBulkPointsModal()">Award</button>
+                                </div>
+                                <div class="quick-action">
+                                    <div class="quick-action-info">
+                                        <div class="quick-action-icon" style="background: #9b59b6;">
+                                            <i class="fas fa-download"></i>
+                                        </div>
+                                        <div class="quick-action-text">Export Points Report</div>
+                                    </div>
+                                    <button class="quick-action-btn" onclick="exportPointsReport()">Export</button>
+                                </div>
+                                <div class="quick-action">
+                                    <div class="quick-action-info">
+                                        <div class="quick-action-icon" style="background: #e74c3c;">
+                                            <i class="fas fa-bell"></i>
+                                        </div>
+                                        <div class="quick-action-text">Send Notifications</div>
+                                    </div>
+                                    <button class="quick-action-btn" onclick="sendRewardNotifications()">Send</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="main-panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">Recent Activity</h3>
+                            </div>
+                            <div class="panel-content">
+                                <div class="reward-card" style="margin-bottom: 10px; padding: 15px;">
+                                    <div class="reward-header" style="margin-bottom: 5px;">
+                                        <div class="reward-title" style="font-size: 14px;">Points Earned</div>
+                                        <div class="reward-points" style="font-size: 12px;">+120 pts</div>
+                                    </div>
+                                    <div class="reward-description" style="font-size: 12px;">
+                                        Sarah J. recycled 12kg plastic - 2 hours ago
+                                    </div>
+                                </div>
+                                <div class="reward-card voucher" style="margin-bottom: 10px; padding: 15px;">
+                                    <div class="reward-header" style="margin-bottom: 5px;">
+                                        <div class="reward-title" style="font-size: 14px;">Voucher Redeemed</div>
+                                        <div class="reward-points" style="font-size: 12px;">-500 pts</div>
+                                    </div>
+                                    <div class="reward-description" style="font-size: 12px;">
+                                        Mike D. redeemed GreenMart voucher - 4 hours ago
+                                    </div>
+                                </div>
+                                <div class="reward-card donation" style="margin-bottom: 10px; padding: 15px;">
+                                    <div class="reward-header" style="margin-bottom: 5px;">
+                                        <div class="reward-title" style="font-size: 14px;">Charity Donation</div>
+                                        <div class="reward-points" style="font-size: 12px;">-1000 pts</div>
+                                    </div>
+                                    <div class="reward-description" style="font-size: 12px;">
+                                        Emma W. donated to Children's Fund - 1 day ago
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reward Modal -->
+    <div class="modal-overlay" id="rewardModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="rewardModalTitle">Add New Reward</h3>
+                <button class="modal-close" onclick="closeModal('rewardModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Reward Type</label>
+                    <select class="form-select" id="rewardType" onchange="updateRewardForm()">
+                        <option value="voucher">Discount Voucher</option>
+                        <option value="tax">Tax Reduction</option>
+                        <option value="charity">Charity Donation</option>
+                    </select>
+                </div>
+
+                <div id="voucherFields">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Store/Partner Name</label>
+                            <input type="text" class="form-input" id="storeName" placeholder="Enter store name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Discount Percentage</label>
+                            <input type="number" class="form-input" id="discountPercent" placeholder="15" min="1" max="100">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Points Required</label>
+                            <input type="number" class="form-input" id="pointsRequired" placeholder="500">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Valid Until</label>
+                            <input type="date" class="form-input" id="validUntil">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="rewardDescription" placeholder="Enter reward description"></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('rewardModal')">Cancel</button>
+                <button class="btn-save" onclick="saveReward()">Save Reward</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileMenu()"></div>
+
+    <script>
+        // Sample data
+        let rewardData = {
+            pointsRates: {
+                plastic: { rate: 12, multiplier: 1.2, status: 'active' },
+                paper: { rate: 8, multiplier: 1.0, status: 'active' },
+                ewaste: { rate: 15, multiplier: 1.5, status: 'active' },
+                metal: { rate: 10, multiplier: 1.3, status: 'active' },
+                glass: { rate: 6, multiplier: 1.0, status: 'active' },
+                organic: { rate: 5, multiplier: 0.8, status: 'active' }
+            },
+            vouchers: [
+                {
+                    id: 'greenmart',
+                    store: 'GreenMart Grocery',
+                    description: 'Organic food store',
+                    discount: 15,
+                    pointsRequired: 500,
+                    validUntil: '2024-12-31',
+                    status: 'active'
+                },
+                {
+                    id: 'ecostore',
+                    store: 'EcoStore Fashion',
+                    description: 'Sustainable clothing',
+                    discount: 20,
+                    pointsRequired: 800,
+                    validUntil: '2024-12-31',
+                    status: 'active'
+                }
+            ],
+            users: [
+                {
+                    id: 'john-smith',
+                    name: 'John Smith',
+                    email: 'john.smith@email.com',
+                    currentPoints: 1247,
+                    totalEarned: 2890,
+                    totalRedeemed: 1643,
+                    lastActivity: '2 days ago'
+                },
+                {
+                    id: 'sarah-johnson',
+                    name: 'Sarah Johnson',
+                    email: 'sarah.johnson@email.com',
+                    currentPoints: 892,
+                    totalEarned: 1456,
+                    totalRedeemed: 564,
+                    lastActivity: '1 day ago'
+                }
+            ]
+        };
+
+        let currentTab = 'overview';
+        let currentEditingVoucher = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            loadTabContent('overview');
+            setupEventListeners();
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Set minimum date for voucher validity
+            const today = new Date().toISOString().split('T')[0];
+            const validUntilInput = document.getElementById('validUntil');
+            if (validUntilInput) {
+                validUntilInput.min = today;
+            }
+
+            // Setup search input
+            const searchInput = document.getElementById('userSearchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchUsers();
+                    }
+                });
+            }
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            // Update active tab button
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`[data-tab="${tab}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+
+            // Hide all tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Show selected tab content
+            const tabContent = document.getElementById(`${tab}-content`);
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
+
+            currentTab = tab;
+            loadTabContent(tab);
+        }
+
+        // Load tab content
+        function loadTabContent(tab) {
+            switch(tab) {
+                case 'points':
+                    loadPointsTable();
+                    break;
+                case 'vouchers':
+                    loadVouchersTable();
+                    break;
+                case 'users':
+                    loadUsersTable();
+                    break;
+                case 'overview':
+                    // Overview content is static HTML
+                    break;
+                case 'tax':
+                    loadTaxContent();
+                    break;
+                case 'donations':
+                    loadDonationsContent();
+                    break;
+            }
+        }
+
+        // Load points configuration table
+        function loadPointsTable() {
+            const tbody = document.getElementById('pointsTableBody');
+            if (!tbody) return;
+
+            const wasteTypes = [
+                { key: 'plastic', name: 'Plastic', description: 'Recyclable plastic waste', icon: 'fas fa-bottle-water', color: '#e74c3c' },
+                { key: 'paper', name: 'Paper', description: 'Paper and cardboard', icon: 'fas fa-newspaper', color: '#9b59b6' },
+                { key: 'ewaste', name: 'E-Waste', description: 'Electronic waste', icon: 'fas fa-mobile-alt', color: '#2ecc71' },
+                { key: 'metal', name: 'Metal', description: 'Metal containers and scraps', icon: 'fas fa-tools', color: '#f39c12' },
+                { key: 'glass', name: 'Glass', description: 'Glass bottles and containers', icon: 'fas fa-wine-glass', color: '#3498db' },
+                { key: 'organic', name: 'Organic', description: 'Organic waste and compost', icon: 'fas fa-seedling', color: '#1abc9c' }
+            ];
+
+            tbody.innerHTML = wasteTypes.map(type => {
+                const config = rewardData.pointsRates[type.key];
+                return `
+                    <tr>
+                        <td>
+                            <div class="user-profile-cell">
+                                <div class="profile-pic" style="background: ${type.color};">
+                                    <i class="${type.icon}"></i>
+                                </div>
+                                <div class="user-details">
+                                    <strong>${type.name}</strong>
+                                    <small>${type.description}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="points-display">
+                                <i class="fas fa-coins"></i>
+                                <span>${config.rate} points</span>
+                            </div>
+                        </td>
+                        <td>${config.multiplier}x</td>
+                        <td><span class="status-badge status-${config.status}">${config.status.charAt(0).toUpperCase() + config.status.slice(1)}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn-sm edit" onclick="editPointsRate('${type.key}')" title="Edit Rate">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Load vouchers table
+        function loadVouchersTable() {
+            const tbody = document.getElementById('vouchersTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = rewardData.vouchers.map(voucher => `
+                <tr>
+                    <td>
+                        <div class="user-profile-cell">
+                            <div class="profile-pic" style="background: #2ecc71;">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="user-details">
+                                <strong>${voucher.store}</strong>
+                                <small>${voucher.description}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td><strong>${voucher.discount}% OFF</strong></td>
+                    <td>
+                        <div class="points-display">
+                            <i class="fas fa-coins"></i>
+                            <span>${voucher.pointsRequired} points</span>
+                        </div>
+                    </td>
+                    <td>${formatDate(voucher.validUntil)}</td>
+                    <td><span class="status-badge status-${voucher.status}">${voucher.status.charAt(0).toUpperCase() + voucher.status.slice(1)}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn-sm edit" onclick="editVoucher('${voucher.id}')" title="Edit Voucher">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn-sm delete" onclick="deleteVoucher('${voucher.id}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Load users table
+        function loadUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = rewardData.users.map(user => `
+                <tr>
+                    <td>
+                        <div class="user-profile-cell">
+                            <div class="profile-pic">${user.name.split(' ').map(n => n[0]).join('')}</div>
+                            <div class="user-details">
+                                <strong>${user.name}</strong>
+                                <small>${user.email}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="points-display">
+                            <i class="fas fa-coins"></i>
+                            <span>${user.currentPoints.toLocaleString()} points</span>
+                        </div>
+                    </td>
+                    <td>${user.totalEarned.toLocaleString()} points</td>
+                    <td>${user.totalRedeemed.toLocaleString()} points</td>
+                    <td>${user.lastActivity}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn-sm view" onclick="viewUserDetails('${user.id}')" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn-sm edit" onclick="adjustUserPoints('${user.id}')" title="Adjust Points">
+                                <i class="fas fa-coins"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Load tax content
+        function loadTaxContent() {
+            console.log('Tax content loaded');
+        }
+
+        // Load donations content
+        function loadDonationsContent() {
+            console.log('Donations content loaded');
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalPoints = rewardData.users.reduce((sum, user) => sum + user.totalEarned, 0);
+            
+            document.getElementById('totalPoints').textContent = totalPoints.toLocaleString();
+            document.getElementById('activeUsers').textContent = rewardData.users.length.toLocaleString();
+            document.getElementById('redeemedVouchers').textContent = '892';
+            document.getElementById('totalDonations').textContent = '$15,683';
+        }
+
+        // Format date helper
+        function formatDate(dateString) {
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+            } catch (error) {
+                return dateString;
+            }
+        }
+
+        // Modal functions
+        function openRewardModal(type) {
+            const modal = document.getElementById('rewardModal');
+            const title = document.getElementById('rewardModalTitle');
+
+            if (!modal || !title) return;
+
+            if (type === 'points') {
+                title.textContent = 'Configure Points Rates';
+            } else {
+                title.textContent = 'Add New Reward';
+                clearForm();
+            }
+
+            modal.classList.add('active');
+        }
+
+        function openPointsConfigModal() {
+            showNotification('Points configuration opened. Use the edit buttons in the table to modify rates.', 'info');
+        }
+
+        function openVoucherModal(mode) {
+            currentEditingVoucher = null;
+            openRewardModal('voucher');
+        }
+
+        function openTaxConfigModal() {
+            showNotification('Tax configuration settings would open here.', 'info');
+        }
+
+        function openCharityModal(mode) {
+            showNotification('Charity partner management would open here.', 'info');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+            clearForm();
+            currentEditingVoucher = null;
+        }
+
+        function clearForm() {
+            const inputs = ['storeName', 'discountPercent', 'pointsRequired', 'validUntil', 'rewardDescription'];
+            inputs.forEach(input => {
+                const element = document.getElementById(input);
+                if (element) element.value = '';
+            });
+
+            const rewardType = document.getElementById('rewardType');
+            if (rewardType) rewardType.value = 'voucher';
+
+            updateRewardForm();
+        }
+
+        function updateRewardForm() {
+            const rewardType = document.getElementById('rewardType');
+            const voucherFields = document.getElementById('voucherFields');
+
+            if (!rewardType || !voucherFields) return;
+
+            // Show/hide fields based on reward type
+            if (rewardType.value === 'voucher') {
+                voucherFields.style.display = 'block';
+            } else {
+                voucherFields.style.display = 'none';
+            }
+        }
+
+        function saveReward() {
+            const rewardType = document.getElementById('rewardType');
+            const storeName = document.getElementById('storeName');
+            const discountPercent = document.getElementById('discountPercent');
+            const pointsRequired = document.getElementById('pointsRequired');
+            const validUntil = document.getElementById('validUntil');
+            const description = document.getElementById('rewardDescription');
+
+            if (!rewardType || !storeName || !discountPercent || !pointsRequired || !validUntil) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+
+            if (rewardType.value === 'voucher') {
+                if (!storeName.value || !discountPercent.value || !pointsRequired.value || !validUntil.value) {
+                    showNotification('Please fill in all required fields', 'error');
+                    return;
+                }
+
+                const voucherId = storeName.value.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+                const newVoucher = {
+                    id: voucherId,
+                    store: storeName.value,
+                    description: description.value || 'Discount voucher',
+                    discount: parseInt(discountPercent.value),
+                    pointsRequired: parseInt(pointsRequired.value),
+                    validUntil: validUntil.value,
+                    status: 'active'
+                };
+
+                if (currentEditingVoucher) {
+                    // Update existing voucher
+                    const index = rewardData.vouchers.findIndex(v => v.id === currentEditingVoucher);
+                    if (index !== -1) {
+                        rewardData.vouchers[index] = { ...rewardData.vouchers[index], ...newVoucher, id: currentEditingVoucher };
+                        showNotification('Voucher updated successfully!', 'success');
+                    }
+                } else {
+                    // Add new voucher
+                    rewardData.vouchers.push(newVoucher);
+                    showNotification('Voucher added successfully!', 'success');
+                }
+            }
+
+            closeModal('rewardModal');
+            if (currentTab === 'vouchers') {
+                loadVouchersTable();
+            }
+        }
+
+        // Edit functions
+        function editPointsRate(wasteType) {
+            const config = rewardData.pointsRates[wasteType];
+            if (!config) return;
+
+            const newRate = prompt(`Enter new points rate for ${wasteType} (current: ${config.rate}):`, config.rate);
+
+            if (newRate && !isNaN(newRate) && newRate > 0) {
+                rewardData.pointsRates[wasteType].rate = parseInt(newRate);
+                loadPointsTable();
+                showNotification(`Points rate for ${wasteType} updated to ${newRate} points/kg!`, 'success');
+            }
+        }
+
+        function editVoucher(voucherId) {
+            const voucher = rewardData.vouchers.find(v => v.id === voucherId);
+            if (!voucher) return;
+
+            currentEditingVoucher = voucherId;
+
+            // Pre-populate form with existing data
+            const storeName = document.getElementById('storeName');
+            const discountPercent = document.getElementById('discountPercent');
+            const pointsRequired = document.getElementById('pointsRequired');
+            const validUntil = document.getElementById('validUntil');
+            const description = document.getElementById('rewardDescription');
+
+            if (storeName) storeName.value = voucher.store;
+            if (discountPercent) discountPercent.value = voucher.discount;
+            if (pointsRequired) pointsRequired.value = voucher.pointsRequired;
+            if (validUntil) validUntil.value = voucher.validUntil;
+            if (description) description.value = voucher.description;
+
+            const title = document.getElementById('rewardModalTitle');
+            if (title) title.textContent = 'Edit Voucher';
+
+            openRewardModal('voucher');
+        }
+
+        function deleteVoucher(voucherId) {
+            if (!confirm('Are you sure you want to delete this voucher?')) return;
+
+            rewardData.vouchers = rewardData.vouchers.filter(v => v.id !== voucherId);
+            loadVouchersTable();
+            showNotification('Voucher deleted successfully!', 'success');
+        }
+
+        function viewUserDetails(userId) {
+            const user = rewardData.users.find(u => u.id === userId);
+            if (!user) return;
+
+            const details = `User Details:
+Name: ${user.name}
+Email: ${user.email}
+Current Points: ${user.currentPoints.toLocaleString()}
+Total Earned: ${user.totalEarned.toLocaleString()}
+Total Redeemed: ${user.totalRedeemed.toLocaleString()}
+Last Activity: ${user.lastActivity}`;
+
+            alert(details);
+        }
+
+        function adjustUserPoints(userId) {
+            const user = rewardData.users.find(u => u.id === userId);
+            if (!user) return;
+
+            const adjustment = prompt(`Current balance: ${user.currentPoints.toLocaleString()} points\nEnter adjustment amount (+ to add, - to subtract):`, '0');
+
+            if (adjustment && !isNaN(adjustment)) {
+                const adjustmentAmount = parseInt(adjustment);
+                const newBalance = user.currentPoints + adjustmentAmount;
+
+                if (newBalance >= 0) {
+                    user.currentPoints = newBalance;
+                    if (adjustmentAmount > 0) {
+                        user.totalEarned += adjustmentAmount;
+                    }
+                    loadUsersTable();
+                    updateStats();
+                    showNotification(`Points adjusted for ${user.name}! New balance: ${newBalance.toLocaleString()} points`, 'success');
+                } else {
+                    showNotification('Cannot set negative points balance!', 'error');
+                }
+            }
+        }
+
+        function viewCharityDetails(charityId) {
+            showNotification('Charity details would be displayed here.', 'info');
+        }
+
+        function editCharity(charityId) {
+            showNotification('Charity editing form would open here.', 'info');
+        }
+
+        // Quick actions
+        function openBulkPointsModal() {
+            const reason = prompt('Enter reason for bulk points award:');
+            if (!reason) return;
+
+            const amount = prompt('Enter points amount to award to all active users:');
+
+            if (amount && !isNaN(amount) && parseInt(amount) > 0) {
+                const pointsAmount = parseInt(amount);
+                rewardData.users.forEach(user => {
+                    user.currentPoints += pointsAmount;
+                    user.totalEarned += pointsAmount;
+                });
+
+                loadUsersTable();
+                updateStats();
+                showNotification(`${pointsAmount} points awarded to ${rewardData.users.length} users for: ${reason}`, 'success');
+            }
+        }
+
+        function exportPointsReport() {
+            try {
+                const reportData = {
+                    generatedAt: new Date().toISOString(),
+                    summary: {
+                        totalUsers: rewardData.users.length,
+                        totalPointsDistributed: rewardData.users.reduce((sum, user) => sum + user.totalEarned, 0),
+                        totalPointsRedeemed: rewardData.users.reduce((sum, user) => sum + user.totalRedeemed, 0),
+                        activeVouchers: rewardData.vouchers.filter(v => v.status === 'active').length
+                    },
+                    users: rewardData.users,
+                    pointsRates: rewardData.pointsRates,
+                    vouchers: rewardData.vouchers
+                };
+
+                const dataStr = JSON.stringify(reportData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `rewards_report_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                showNotification('Points report exported successfully!', 'success');
+            } catch (error) {
+                console.error('Export error:', error);
+                showNotification('Export failed. Please try again.', 'error');
+            }
+        }
+
+        function sendRewardNotifications() {
+            const message = prompt('Enter notification message to send to all reward users:');
+
+            if (message && message.trim()) {
+                // Simulate sending notifications
+                setTimeout(() => {
+                    showNotification(`Notification "${message}" sent to ${rewardData.users.length} users!`, 'success');
+                }, 1000);
+            }
+        }
+
+        function searchUsers() {
+            const searchInput = document.getElementById('userSearchInput');
+            if (!searchInput) return;
+
+            const searchTerm = searchInput.value.toLowerCase().trim();
+
+            if (searchTerm) {
+                const filteredUsers = rewardData.users.filter(user => 
+                    user.name.toLowerCase().includes(searchTerm) ||
+                    user.email.toLowerCase().includes(searchTerm)
+                );
+
+                // Update table with filtered results
+                const tbody = document.getElementById('usersTableBody');
+                if (tbody) {
+                    if (filteredUsers.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">No users found matching your search.</td></tr>';
+                    } else {
+                        tbody.innerHTML = filteredUsers.map(user => `
+                            <tr>
+                                <td>
+                                    <div class="user-profile-cell">
+                                        <div class="profile-pic">${user.name.split(' ').map(n => n[0]).join('')}</div>
+                                        <div class="user-details">
+                                            <strong>${user.name}</strong>
+                                            <small>${user.email}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="points-display">
+                                        <i class="fas fa-coins"></i>
+                                        <span>${user.currentPoints.toLocaleString()} points</span>
+                                    </div>
+                                </td>
+                                <td>${user.totalEarned.toLocaleString()} points</td>
+                                <td>${user.totalRedeemed.toLocaleString()} points</td>
+                                <td>${user.lastActivity}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-btn-sm view" onclick="viewUserDetails('${user.id}')" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="action-btn-sm edit" onclick="adjustUserPoints('${user.id}')" title="Adjust Points">
+                                            <i class="fas fa-coins"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+
+                showNotification(`Found ${filteredUsers.length} users matching "${searchTerm}"`, 'info');
+            } else {
+                loadUsersTable();
+                showNotification('Search cleared. Showing all users.', 'info');
+            }
+        }
+
+        // Page navigation
+        function loadPage(page) {
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+
+            const pageNames = {
+                'dashboard': 'Dashboard',
+                'user-management': 'User Management',
+                'pickup-requests': 'Pickup Requests',
+                'waste-analysis': 'Waste Analysis',
+                'reward-system': 'Reward System',
+                'partners': 'Partners',
+                'reports': 'Reports',
+                'settings': 'Settings'
+            };
+
+            if (page !== 'reward-system') {
+                showNotification(`Navigating to ${pageNames[page]} page...`, 'info');
+            }
+        }
+
+        // Sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+
+            if (sidebar && mainContent) {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            }
+        }
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+
+            if (sidebar && mobileOverlay) {
+                sidebar.classList.toggle('mobile-open');
+                mobileOverlay.classList.toggle('active');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 3000;
+                font-weight: 600;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                max-width: 300px;
+                word-wrap: break-word;
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modals = document.querySelectorAll('.modal-overlay');
+            modals.forEach(modal => {
+                if (e.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+
+        // Handle escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const activeModal = document.querySelector('.modal-overlay.active');
+                if (activeModal) {
+                    closeModal(activeModal.id);
+                }
+            }
+        });
+
+        console.log('EcoWaste Reward System Dashboard Loaded');
+    </script>
+</body>
+</html>points')" data-tab="points">
+                            <i class="fas fa-coins"></i>
+                            Points Management
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('

@@ -1,0 +1,2095 @@
+<!-- Request Modal -->
+<div class="modal-overlay" id="requestModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modalTitle">New Pickup Request</h3>
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Customer Information -->
+            <div class="form-group">
+                <label class="form-label">Customer Information</label>
+                <div class="form-row">
+                    <div>
+                        <label class="form-label">Customer Name *</label>
+                        <input type="text" class="form-input" id="customerName" placeholder="Enter customer name" required>
+                    </div>
+                    <div>
+                        <label class="form-label">Contact Number *</label>
+                        <input type="tel" class="form-input" id="contactNumber" placeholder="Enter contact number" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Waste Types -->
+            <div class="form-group">
+                <label class="form-label">Waste Types & Weights</label>
+                <div class="waste-types-grid">
+                    <div class="waste-type-item">
+                        <input type="checkbox" id="plastic" name="wasteType" value="plastic">
+                        <label for="plastic">Plastic</label>
+                        <input type="number" class="waste-weight-input" id="plasticWeight" placeholder="kg" min="0" step="0.1" disabled>
+                    </div>
+                    <div class="waste-type-item">
+                        <input type="checkbox" id="paper" name="wasteType" value="paper">
+                        <label for="paper">Paper</label>
+                        <input type="number" class="waste-weight-input" id="paperWeight" placeholder="kg" min="0" step="0.1" disabled>
+                    </div>
+                    <div class="waste-type-item">
+                        <input type="checkbox" id="ewaste" name="wasteType" value="ewaste">
+                        <label for="ewaste">E-Waste</label>
+                        <input type="number" class="waste-weight-input" id="ewasteWeight" placeholder="kg" min="0" step="0.1" disabled>
+                    </div>
+                    <div class="waste-type-item">
+                        <input type="checkbox" id="metal" name="wasteType" value="metal">
+                        <label for="metal">Metal</label>
+                        <input type="number" class="waste-weight-input" id="metalWeight" placeholder="kg" min="0" step="0.1" disabled>
+                    </div>
+                    <div class="waste-type-item">
+                        <input type="checkbox" id="glass" name="wasteType" value="glass">
+                        <label for="glass">Glass</label>
+                        <input type="number" class="waste-weight-input" id="glassWeight" placeholder="kg" min="0" step="0.1" disabled>
+                    </div>
+                    <div class="waste-type-item">
+                        <input type="checkbox" id="organic" name="wasteType" value="organic">
+                        <label for="organic">Organic</label>
+                        <input type="number" class="waste-weight-input" id="organicWeight" placeholder="kg" min="0" step="0.1" disabled>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pickup Schedule -->
+            <div class="form-group">
+                <label class="form-label">Pickup Schedule</label>
+                <div class="form-row">
+                    <div>
+                        <label class="form-label">Pickup Date *</label>
+                        <input type="date" class="form-input" id="pickupDate" required>
+                    </div>
+                    <div>
+                        <label class="form-label">Time Slot *</label>
+                        <select class="form-select" id="timeSlot" required>
+                            <option value="">Select Time Slot</option>
+                            <option value="09:00-12:00">9:00 AM - 12:00 PM</option>
+                            <option value="12:00-15:00">12:00 PM - 3:00 PM</option>
+                            <option value="15:00-18:00">3:00 PM - 6:00 PM</option>
+                            <option value="18:00-21:00">6:00 PM - 9:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div class="form-group">
+                <label class="form-label">Pickup Address *</label>
+                <textarea class="form-textarea" id="pickupAddress" placeholder="Enter complete pickup address" required></textarea>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="form-group">
+                <div class="form-row">
+                    <div>
+                        <label class="form-label">Priority</label>
+                        <select class="form-select" id="priority">
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="status">
+                            <option value="pending">Pending</option>
+                            <option value="assigned">Assigned</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collector Assignment -->
+            <div class="form-group">
+                <label class="form-label">Assign Collector</label>
+                <select class="form-select" id="assignedCollector">
+                    <option value="">Select Collector</option>
+                    <option value="John Collector">John Collector</option>
+                    <option value="Sarah Collector">Sarah Collector</option>
+                    <option value="Mike Collector">Mike Collector</option>
+                    <option value="Emma Collector">Emma Collector</option>
+                </select>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group">
+                <label class="form-label">Notes</label>
+                <textarea class="form-textarea" id="notes" placeholder="Additional notes or special instructions"></textarea>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-save" onclick="saveRequest()">Save Request</button>
+        </div>
+    </div>
+</div>
+
+<!-- View Modal -->
+<div class="modal-overlay" id="viewModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Request Details</h3>
+            <button class="modal-close" onclick="closeViewModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="viewModalBody">
+            <!-- Content will be populated dynamically -->
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeViewModal()">Close</button>
+            <button class="btn-save" id="assignCollectorBtn" onclick="performAssignCollector()" style="display: none;">
+                <i class="fas fa-user-check"></i> Assign Collector
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Overlay -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileMenu()"></div>
+
+<script>
+    // Sample pickup requests data
+    let pickupRequests = [
+        {
+            id: 'REQ001',
+            customerName: 'John Smith',
+            contactNumber: '+1-234-567-8901',
+            wasteTypes: [
+                { type: 'plastic', weight: 2.5 },
+                { type: 'paper', weight: 1.8 }
+            ],
+            pickupDate: '2024-08-05',
+            timeSlot: '09:00-12:00',
+            address: '123 Green Street, Eco City, EC 12345',
+            priority: 'medium',
+            status: 'pending',
+            assignedCollector: '',
+            notes: 'Please call before arrival',
+            createdAt: '2024-07-30T10:30:00Z'
+        },
+        {
+            id: 'REQ002',
+            customerName: 'Sarah Johnson',
+            contactNumber: '+1-234-567-8902',
+            wasteTypes: [
+                { type: 'ewaste', weight: 5.2 },
+                { type: 'metal', weight: 3.1 }
+            ],
+            pickupDate: '2024-08-06',
+            timeSlot: '15:00-18:00',
+            address: '456 Blue Avenue, Eco City, EC 12346',
+            priority: 'high',
+            status: 'assigned',
+            assignedCollector: 'John Collector',
+            notes: 'Old computer and cables',
+            createdAt: '2024-07-29T14:15:00Z'
+        },
+        {
+            id: 'REQ003',
+            customerName: 'Mike Davis',
+            contactNumber: '+1-234-567-8903',
+            wasteTypes: [
+                { type: 'glass', weight: 4.0 },
+                { type: 'organic', weight: 2.3 }
+            ],
+            pickupDate: '2024-08-04',
+            timeSlot: '12:00-15:00',
+            address: '789 Yellow Road, Eco City, EC 12347',
+            priority: 'low',
+            status: 'completed',
+            assignedCollector: 'Sarah Collector',
+            notes: 'Glass bottles and garden waste',
+            createdAt: '2024-07-28T09:45:00Z'
+        },
+        {
+            id: 'REQ004',
+            customerName: 'Emma Wilson',
+            contactNumber: '+1-234-567-8904',
+            wasteTypes: [
+                { type: 'plastic', weight: 1.5 },
+                { type: 'paper', weight: 3.2 },
+                { type: 'organic', weight: 1.8 }
+            ],
+            pickupDate: '2024-08-07',
+            timeSlot: '18:00-21:00',
+            address: '321 Purple Lane, Eco City, EC 12348',
+            priority: 'medium',
+            status: 'in-progress',
+            assignedCollector: 'Mike Collector',
+            notes: 'Mixed household waste',
+            createdAt: '2024-07-31T16:20:00Z'
+        }
+    ];
+
+    let filteredRequests = [...pickupRequests];
+    let currentEditId = null;
+    let currentFilter = 'all';
+    let currentAssignRequestId = null;
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+        setMinDate();
+        setupWasteTypeListeners();
+        displayRequests();
+        updateStats();
+        updateTabCounts();
+    });
+
+    // Set minimum date for pickup date input
+    function setMinDate() {
+        const today = new Date().toISOString().split('T')[0];
+        const pickupDateInput = document.getElementById('pickupDate');
+        if (pickupDateInput) {
+            pickupDateInput.min = today;
+        }
+    }
+
+    // Setup waste type checkbox listeners
+    function setupWasteTypeListeners() {
+        const wasteTypes = ['plastic', 'paper', 'ewaste', 'metal', 'glass', 'organic'];
+        
+        wasteTypes.forEach(type => {
+            const checkbox = document.getElementById(type);
+            const weightInput = document.getElementById(type + 'Weight');
+            
+            if (checkbox && weightInput) {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        weightInput.disabled = false;
+                        weightInput.focus();
+                    } else {
+                        weightInput.disabled = true;
+                        weightInput.value = '';
+                    }
+                });
+            }
+        });
+    }
+
+    // Display requests in table
+    function displayRequests(requestsToShow = filteredRequests) {
+        const tbody = document.getElementById('requestsTableBody');
+        const noRequestsMessage = document.getElementById('noRequestsMessage');
+        
+        if (!tbody) return;
+        
+        if (requestsToShow.length === 0) {
+            tbody.innerHTML = '';
+            if (noRequestsMessage) {
+                noRequestsMessage.style.display = 'block';
+            }
+            return;
+        }
+        
+        if (noRequestsMessage) {
+            noRequestsMessage.style.display = 'none';
+        }
+        
+        tbody.innerHTML = requestsToShow.map(request => `
+            <tr>
+                <td>
+                    <strong>${request.id}</strong>
+                    <br>
+                    <small>${formatDateTime(request.createdAt)}</small>
+                </td>
+                <td>
+                    <div class="user-profile-cell">
+                        <div class="profile-pic">
+                            ${request.customerName.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="user-details">
+                            <strong>${request.customerName}</strong>
+                            <small>${request.contactNumber}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="waste-types">
+                        ${request.wasteTypes.map(waste => 
+                            `<span class="waste-type waste-${waste.type}">${waste.type} (${waste.weight}kg)</span>`
+                        ).join('')}
+                    </div>
+                </td>
+                <td>
+                    <strong>${getTotalWeight(request.wasteTypes)} kg</strong>
+                </td>
+                <td>
+                    <strong>${formatDate(request.pickupDate)}</strong>
+                    <br>
+                    <small>${request.timeSlot}</small>
+                </td>
+                <td>
+                    <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        ${request.address}
+                    </div>
+                </td>
+                <td>
+                    <span class="status-badge status-${request.status}">
+                        ${request.status.replace('-', ' ')}
+                    </span>
+                    <br>
+                    <span class="priority-badge priority-${request.priority}">
+                        ${request.priority}
+                    </span>
+                </td>
+                <td>
+                    ${request.assignedCollector ? 
+                        `<div class="user-details">
+                            <strong>${request.assignedCollector}</strong>
+                            <small>Assigned</small>
+                        </div>` : 
+                        '<span style="color: #7f8c8d;">Not assigned</span>'
+                    }
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="action-btn-sm view" onclick="viewRequest('${request.id}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${request.status === 'pending' ? 
+                            `<button class="action-btn-sm assign" onclick="assignCollectorModal('${request.id}')" title="Assign Collector">
+                                <i class="fas fa-user-check"></i>
+                            </button>` : ''
+                        }
+                        <button class="action-btn-sm edit" onclick="editRequest('${request.id}')" title="Edit Request">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn-sm delete" onclick="deleteRequest('${request.id}')" title="Delete Request">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // Calculate total weight
+    function getTotalWeight(wasteTypes) {
+        return wasteTypes.reduce((total, waste) => total + waste.weight, 0).toFixed(1);
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    }
+
+    // Format date and time
+    function formatDateTime(dateTimeString) {
+        const date = new Date(dateTimeString);
+        return date.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    // Update statistics
+    function updateStats() {
+        const totalRequests = pickupRequests.length;
+        const pendingRequests = pickupRequests.filter(req => req.status === 'pending').length;
+        const assignedRequests = pickupRequests.filter(req => req.status === 'assigned' || req.status === 'in-progress').length;
+        const completedRequests = pickupRequests.filter(req => req.status === 'completed').length;
+
+        const totalEl = document.getElementById('totalRequests');
+        const pendingEl = document.getElementById('pendingRequests');
+        const assignedEl = document.getElementById('assignedRequests');
+        const completedEl = document.getElementById('completedRequests');
+
+        if (totalEl) totalEl.textContent = totalRequests;
+        if (pendingEl) pendingEl.textContent = pendingRequests;
+        if (assignedEl) assignedEl.textContent = assignedRequests;
+        if (completedEl) completedEl.textContent = completedRequests;
+    }
+
+    // Update tab counts
+    function updateTabCounts() {
+        const counts = {
+            all: pickupRequests.length,
+            pending: pickupRequests.filter(req => req.status === 'pending').length,
+            assigned: pickupRequests.filter(req => req.status === 'assigned' || req.status === 'in-progress').length,
+            completed: pickupRequests.filter(req => req.status === 'completed').length
+        };
+
+        const allCount = document.getElementById('allCount');
+        const pendingCount = document.getElementById('pendingCount');
+        const assignedCount = document.getElementById('assignedCount');
+        const completedCount = document.getElementById('completedCount');
+
+        if (allCount) allCount.textContent = counts.all;
+        if (pendingCount) pendingCount.textContent = counts.pending;
+        if (assignedCount) assignedCount.textContent = counts.assigned;
+        if (completedCount) completedCount.textContent = counts.completed;
+    }
+
+    // Filter by status
+    function filterByStatus(status) {
+        currentFilter = status;
+        
+        // Update active tab
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.querySelector(`[data-status="${status}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+        
+        // Filter requests
+        if (status === 'all') {
+            filteredRequests = [...pickupRequests];
+        } else if (status === 'assigned') {
+            filteredRequests = pickupRequests.filter(req => req.status === 'assigned' || req.status === 'in-progress');
+        } else {
+            filteredRequests = pickupRequests.filter(req => req.status === status);
+        }
+        
+        // Apply search filter if exists
+        const searchInput = document.getElementById('searchInput');
+        const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+        if (searchTerm) {
+            filteredRequests = filteredRequests.filter(request =>
+                request.id.toLowerCase().includes(searchTerm) ||
+                request.customerName.toLowerCase().includes(searchTerm) ||
+                request.address.toLowerCase().includes(searchTerm)
+            );
+        }
+        
+        displayRequests(filteredRequests);
+    }
+
+    // Filter requests by search
+    function filterRequests() {
+        const searchInput = document.getElementById('searchInput');
+        const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+        
+        // Start with status filter
+        let baseFilteredRequests;
+        if (currentFilter === 'all') {
+            baseFilteredRequests = [...pickupRequests];
+        } else if (currentFilter === 'assigned') {
+            baseFilteredRequests = pickupRequests.filter(req => req.status === 'assigned' || req.status === 'in-progress');
+        } else {
+            baseFilteredRequests = pickupRequests.filter(req => req.status === currentFilter);
+        }
+        
+        // Apply search filter
+        if (searchTerm === '') {
+            filteredRequests = baseFilteredRequests;
+        } else {
+            filteredRequests = baseFilteredRequests.filter(request =>
+                request.id.toLowerCase().includes(searchTerm) ||
+                request.customerName.toLowerCase().includes(searchTerm) ||
+                request.address.toLowerCase().includes(searchTerm)
+            );
+        }
+        
+        displayRequests(filteredRequests);
+    }
+
+    // Open modal
+    function openModal(mode, requestId = null) {
+        const modal = document.getElementById('requestModal');
+        const modalTitle = document.getElementById('modalTitle');
+        
+        if (!modal || !modalTitle) return;
+        
+        if (mode === 'add') {
+            modalTitle.textContent = 'New Pickup Request';
+            clearForm();
+            currentEditId = null;
+        } else if (mode === 'edit') {
+            modalTitle.textContent = 'Edit Pickup Request';
+            const request = pickupRequests.find(r => r.id === requestId);
+            if (request) {
+                populateForm(request);
+                currentEditId = requestId;
+            }
+        }
+        
+        modal.classList.add('active');
+    }
+
+    // Close modal
+    function closeModal() {
+        const modal = document.getElementById('requestModal');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+        clearForm();
+        currentEditId = null;
+    }
+
+    // Close view modal
+    function closeViewModal() {
+        const modal = document.getElementById('viewModal');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+        currentAssignRequestId = null;
+    }
+
+    // Clear form
+    function clearForm() {
+        const fields = ['customerName', 'contactNumber', 'pickupDate', 'timeSlot', 'pickupAddress', 'notes'];
+        fields.forEach(field => {
+            const element = document.getElementById(field);
+            if (element) element.value = '';
+        });
+        
+        const selects = ['priority', 'status', 'assignedCollector'];
+        selects.forEach(select => {
+            const element = document.getElementById(select);
+            if (element) {
+                if (select === 'priority') element.value = 'medium';
+                else if (select === 'status') element.value = 'pending';
+                else element.value = '';
+            }
+        });
+        
+        // Clear waste types
+        const wasteTypes = ['plastic', 'paper', 'ewaste', 'metal', 'glass', 'organic'];
+        wasteTypes.forEach(type => {
+            const checkbox = document.getElementById(type);
+            const weightInput = document.getElementById(type + 'Weight');
+            if (checkbox) checkbox.checked = false;
+            if (weightInput) {
+                weightInput.value = '';
+                weightInput.disabled = true;
+            }
+        });
+    }
+
+    // Populate form for editing
+    function populateForm(request) {
+        const fieldMap = {
+            'customerName': request.customerName,
+            'contactNumber': request.contactNumber,
+            'pickupDate': request.pickupDate,
+            'timeSlot': request.timeSlot,
+            'pickupAddress': request.address,
+            'priority': request.priority,
+            'status': request.status,
+            'assignedCollector': request.assignedCollector,
+            'notes': request.notes
+        };
+
+        Object.keys(fieldMap).forEach(field => {
+            const element = document.getElementById(field);
+            if (element) element.value = fieldMap[field];
+        });
+        
+        // Populate waste types
+        request.wasteTypes.forEach(waste => {
+            const checkbox = document.getElementById(waste.type);
+            const weightInput = document.getElementById(waste.type + 'Weight');
+            if (checkbox) checkbox.checked = true;
+            if (weightInput) {
+                weightInput.value = waste.weight;
+                weightInput.disabled = false;
+            }
+        });
+    }
+
+    // Save request
+    function saveRequest() {
+        const customerName = getValue('customerName');
+        const contactNumber = getValue('contactNumber');
+        const pickupDate = getValue('pickupDate');
+        const timeSlot = getValue('timeSlot');
+        const address = getValue('pickupAddress');
+        const priority = getValue('priority');
+        const status = getValue('status');
+        const assignedCollector = getValue('assignedCollector');
+        const notes = getValue('notes');
+
+        // Validation
+        if (!customerName || !contactNumber || !pickupDate || !timeSlot || !address) {
+            alert('Please fill in all required fields');
+            return;
+        }
+
+        // Get selected waste types
+        const wasteTypes = [];
+        const wasteTypeNames = ['plastic', 'paper', 'ewaste', 'metal', 'glass', 'organic'];
+        let hasValidWaste = false;
+        
+        wasteTypeNames.forEach(type => {
+            const checkbox = document.getElementById(type);
+            const weightInput = document.getElementById(type + 'Weight');
+            
+            if (checkbox && checkbox.checked && weightInput) {
+                const weight = parseFloat(weightInput.value);
+                if (weight && weight > 0) {
+                    wasteTypes.push({ type, weight });
+                    hasValidWaste = true;
+                }
+            }
+        });
+
+        if (!hasValidWaste) {
+            alert('Please select at least one waste type with a valid weight');
+            return;
+        }
+
+        if (currentEditId) {
+            // Edit existing request
+            const requestIndex = pickupRequests.findIndex(r => r.id === currentEditId);
+            if (requestIndex !== -1) {
+                pickupRequests[requestIndex] = {
+                    ...pickupRequests[requestIndex],
+                    customerName,
+                    contactNumber,
+                    wasteTypes,
+                    pickupDate,
+                    timeSlot,
+                    address,
+                    priority,
+                    status,
+                    assignedCollector,
+                    notes
+                };
+            }
+        } else {
+            // Add new request
+            const newRequest = {
+                id: 'REQ' + String(pickupRequests.length + 1).padStart(3, '0'),
+                customerName,
+                contactNumber,
+                wasteTypes,
+                pickupDate,
+                timeSlot,
+                address,
+                priority,
+                status,
+                assignedCollector,
+                notes,
+                createdAt: new Date().toISOString()
+            };
+            pickupRequests.push(newRequest);
+        }
+
+        closeModal();
+        filterByStatus(currentFilter);
+        updateStats();
+        updateTabCounts();
+        
+        const message = currentEditId ? 'Request updated successfully!' : 'Request created successfully!';
+        showNotification(message, 'success');
+    }
+
+    // Helper function to get element value
+    function getValue(id) {
+        const element = document.getElementById(id);
+        return element ? element.value.trim() : '';
+    }
+
+    // Edit request
+    function editRequest(requestId) {
+        openModal('edit', requestId);
+    }
+
+    // View request details
+    function viewRequest(requestId) {
+        const request = pickupRequests.find(r => r.id === requestId);
+        if (!request) return;
+
+        const modal = document.getElementById('viewModal');
+        const modalBody = document.getElementById('viewModalBody');
+        
+        if (!modal || !modalBody) return;
+        
+        modalBody.innerHTML = `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4 style="margin-bottom: 15px; color: #2c3e50;">Customer Information</h4>
+                    <p><strong>Name:</strong> ${request.customerName}</p>
+                    <p><strong>Contact:</strong> ${request.contactNumber}</p>
+                    <p><strong>Request ID:</strong> ${request.id}</p>
+                    <p><strong>Created:</strong> ${formatDateTime(request.createdAt)}</p>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 15px; color: #2c3e50;">Pickup Details</h4>
+                    <p><strong>Date:</strong> ${formatDate(request.pickupDate)}</p>
+                    <p><strong>Time:</strong> ${request.timeSlot}</p>
+                    <p><strong>Priority:</strong> <span class="priority-badge priority-${request.priority}">${request.priority}</span></p>
+                    <p><strong>Status:</strong> <span class="status-badge status-${request.status}">${request.status.replace('-', ' ')}</span></p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h4 style="margin-bottom: 15px; color: #2c3e50;">Waste Types & Weights</h4>
+                <div class="waste-types">
+                    ${request.wasteTypes.map(waste => 
+                        `<span class="waste-type waste-${waste.type}">${waste.type}: ${waste.weight}kg</span>`
+                    ).join('')}
+                </div>
+                <p style="margin-top: 10px;"><strong>Total Weight:</strong> ${getTotalWeight(request.wasteTypes)} kg</p>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h4 style="margin-bottom: 15px; color: #2c3e50;">Address</h4>
+                <p>${request.address}</p>
+            </div>
+            
+            ${request.assignedCollector ? `
+                <div style="margin-top: 20px;">
+                    <h4 style="margin-bottom: 15px; color: #2c3e50;">Assigned Collector</h4>
+                    <p>${request.assignedCollector}</p>
+                </div>
+            ` : ''}
+            
+            ${request.notes ? `
+                <div style="margin-top: 20px;">
+                    <h4 style="margin-bottom: 15px; color: #2c3e50;">Notes</h4>
+                    <p>${request.notes}</p>
+                </div>
+            ` : ''}
+        `;
+        
+        modal.classList.add('active');
+    }
+
+    // Assign collector modal
+    function assignCollectorModal(requestId) {
+        const request = pickupRequests.find(r => r.id === requestId);
+        if (!request) return;
+
+        const modal = document.getElementById('viewModal');
+        const modalBody = document.getElementById('viewModalBody');
+        const assignBtn = document.getElementById('assignCollectorBtn');
+        
+        if (!modal || !modalBody || !assignBtn) return;
+        
+        currentAssignRequestId = requestId;
+        
+        modalBody.innerHTML = `
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #2c3e50;">Assign Collector to Request ${request.id}</h4>
+                <p style="color: #7f8c8d;">Customer: ${request.customerName}</p>
+                <p style="color: #7f8c8d;">Pickup Date: ${formatDate(request.pickupDate)} (${request.timeSlot})</p>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Select Collector *</label>
+                <select class="form-select" id="newCollectorAssignment" required>
+                    <option value="">Choose a collector</option>
+                    <option value="John Collector">John Collector</option>
+                    <option value="Sarah Collector">Sarah Collector</option>
+                    <option value="Mike Collector">Mike Collector</option>
+                    <option value="Emma Collector">Emma Collector</option>
+                </select>
+            </div>
+        `;
+        
+        assignBtn.style.display = 'block';
+        modal.classList.add('active');
+    }
+
+    // Perform collector assignment
+    function performAssignCollector() {
+        if (!currentAssignRequestId) return;
+        
+        const collectorSelect = document.getElementById('newCollectorAssignment');
+        const collector = collectorSelect ? collectorSelect.value : '';
+        
+        if (!collector) {
+            alert('Please select a collector');
+            return;
+        }
+
+        const requestIndex = pickupRequests.findIndex(r => r.id === currentAssignRequestId);
+        if (requestIndex !== -1) {
+            pickupRequests[requestIndex].assignedCollector = collector;
+            pickupRequests[requestIndex].status = 'assigned';
+            
+            closeViewModal();
+            filterByStatus(currentFilter);
+            updateStats();
+            updateTabCounts();
+            showNotification(`Collector assigned successfully to request ${currentAssignRequestId}!`, 'success');
+        }
+    }
+
+    // Delete request
+    function deleteRequest(requestId) {
+        const request = pickupRequests.find(r => r.id === requestId);
+        if (!request) return;
+
+        if (confirm(`Are you sure you want to delete request ${requestId} from ${request.customerName}? This action cannot be undone.`)) {
+            pickupRequests = pickupRequests.filter(r => r.id !== requestId);
+            filterByStatus(currentFilter);
+            updateStats();
+            updateTabCounts();
+            showNotification('Request deleted successfully!', 'success');
+        }
+    }
+
+    // Show notification
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#27ae60' : '#3498db'};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 3000;
+            font-weight: 600;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+        `;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // Page navigation
+    function loadPage(page) {
+        // Update active menu item
+        document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+        
+        // In a real application, this would load different pages
+        const pageNames = {
+            'dashboard': 'Dashboard',
+            'user-management': 'User Management',
+            'pickup-requests': 'Pickup Requests',
+            'waste-analysis': 'Waste Analysis',
+            'reward-system': 'Reward System',
+            'partners': 'Partners',
+            'reports': 'Reports',
+            'settings': 'Settings'
+        };
+        
+        if (page !== 'pickup-requests') {
+            showNotification(`Navigating to ${pageNames[page]} page...`, 'info');
+            
+            // Simulate page navigation
+            setTimeout(() => {
+                if (page === 'user-management') {
+                    window.location.href = 'user-management.html';
+                } else {
+                    alert(`${pageNames[page]} page would load here. This is a demo of the Pickup Requests page.`);
+                }
+            }, 1000);
+        }
+    }
+
+    // Sidebar toggle
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        
+        if (sidebar && mainContent) {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+    }
+
+    // Mobile menu toggle
+    function toggleMobileMenu() {
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        
+        if (sidebar && mobileOverlay) {
+            sidebar.classList.toggle('mobile-open');
+            mobileOverlay.classList.toggle('active');
+        }
+    }
+
+    // Close modals when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+        const requestModal = document.getElementById('requestModal');
+        const viewModal = document.getElementById('viewModal');
+        
+        if (requestModal) {
+            requestModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+        }
+
+        if (viewModal) {
+            viewModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeViewModal();
+                }
+            });
+        }
+    });
+
+    // Handle escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+            closeViewModal();
+        }
+    });
+
+    // Handle enter key in modals
+    document.addEventListener('keydown', function(e) {
+        const requestModal = document.getElementById('requestModal');
+        if (requestModal && requestModal.classList.contains('active') && e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            saveRequest();
+        }
+    });
+
+    // Contact number formatting
+    document.addEventListener('DOMContentLoaded', function() {
+        const contactInput = document.getElementById('contactNumber');
+        if (contactInput) {
+            contactInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                if (value.length > 0) {
+                    if (value.length <= 3) {
+                        value = value;
+                    } else if (value.length <= 6) {
+                        value = value.slice(0, 3) + '-' + value.slice(3);
+                    } else if (value.length <= 10) {
+                        value = value.slice(0, 3) + '-' + value.slice(3, 6) + '-' + value.slice(6);
+                    } else {
+                        value = '+' + value.slice(0, 1) + '-' + value.slice(1, 4) + '-' + value.slice(4, 7) + '-' + value.slice(7, 11);
+                    }
+                }
+                
+                e.target.value = value;
+            });
+        }
+    });
+
+    // Auto-resize textarea
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('form-textarea')) {
+            e.target.style.height = 'auto';
+            e.target.style.height = e.target.scrollHeight + 'px';
+        }
+    });
+
+    // Quick status update functions
+    function quickStatusUpdate(requestId, newStatus) {
+        const requestIndex = pickupRequests.findIndex(r => r.id === requestId);
+        if (requestIndex !== -1) {
+            pickupRequests[requestIndex].status = newStatus;
+            
+            filterByStatus(currentFilter);
+            updateStats();
+            updateTabCounts();
+            showNotification(`Request ${requestId} status updated to ${newStatus}!`, 'success');
+        }
+    }
+
+    // Bulk operations functions
+    function bulkAssign(requestIds, collector) {
+        requestIds.forEach(id => {
+            const requestIndex = pickupRequests.findIndex(r => r.id === id);
+            if (requestIndex !== -1) {
+                pickupRequests[requestIndex].assignedCollector = collector;
+                pickupRequests[requestIndex].status = 'assigned';
+            }
+        });
+        
+        filterByStatus(currentFilter);
+        updateStats();
+        updateTabCounts();
+        showNotification(`${requestIds.length} requests assigned to ${collector}!`, 'success');
+    }
+
+    function bulkStatusUpdate(requestIds, newStatus) {
+        requestIds.forEach(id => {
+            const requestIndex = pickupRequests.findIndex(r => r.id === id);
+            if (requestIndex !== -1) {
+                pickupRequests[requestIndex].status = newStatus;
+            }
+        });
+        
+        filterByStatus(currentFilter);
+        updateStats();
+        updateTabCounts();
+        showNotification(`${requestIds.length} requests updated to ${newStatus}!`, 'success');
+    }
+
+    // Export functionality
+    function exportRequests() {
+        try {
+            const dataStr = JSON.stringify(pickupRequests, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'pickup_requests_' + new Date().toISOString().split('T')[0] + '.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Pickup requests exported successfully!', 'success');
+        } catch (error) {
+            showNotification('Export failed. Please try again.', 'error');
+        }
+    }
+
+    // Analytics functions
+    function getRequestsByDate() {
+        const today = new Date();
+        const last7Days = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        
+        return pickupRequests.filter(req => 
+            new Date(req.createdAt) >= last7Days
+        ).length;
+    }
+
+    function getTopWasteTypes() {
+        const wasteCount = {};
+        
+        pickupRequests.forEach(req => {
+            req.wasteTypes.forEach(waste => {
+                wasteCount[waste.type] = (wasteCount[waste.type] || 0) + waste.weight;
+            });
+        });
+        
+        return Object.entries(wasteCount)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 5);
+    }
+
+    function getCollectorPerformance() {
+        const performance = {};
+        
+        pickupRequests
+            .filter(req => req.assignedCollector && req.status === 'completed')
+            .forEach(req => {
+                performance[req.assignedCollector] = (performance[req.assignedCollector] || 0) + 1;
+            });
+        
+        return Object.entries(performance)
+            .sort(([,a], [,b]) => b - a);
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('EcoWaste Pickup Requests Dashboard Loaded');
+        console.log('Total Requests:', pickupRequests.length);
+    });
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pickup Requests - EcoWaste Admin</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #f8fafb;
+        color: #2c3e50;
+        overflow-x: hidden;
+    }
+
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+        width: 280px;
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        color: white;
+        position: fixed;
+        height: 100vh;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+    }
+
+    .sidebar.collapsed {
+        width: 70px;
+    }
+
+    .sidebar-header {
+        padding: 25px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .logo {
+        font-size: 24px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .logo i {
+        font-size: 28px;
+    }
+
+    .collapse-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+        margin-left: auto;
+    }
+
+    .collapse-btn:hover {
+        background: rgba(255,255,255,0.1);
+    }
+
+    .sidebar-menu {
+        padding: 20px 0;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        color: rgba(255,255,255,0.8);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+        gap: 15px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .menu-item:hover {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .menu-item.active {
+        background: rgba(255,255,255,0.15);
+        color: white;
+        border-right: 4px solid #fff;
+    }
+
+    .menu-item i {
+        font-size: 18px;
+        width: 20px;
+        text-align: center;
+    }
+
+    .sidebar.collapsed .menu-item span {
+        display: none;
+    }
+
+    .sidebar.collapsed .logo span {
+        display: none;
+    }
+
+    /* Main Content */
+    .main-content {
+        flex: 1;
+        margin-left: 280px;
+        transition: margin-left 0.3s ease;
+    }
+
+    .main-content.expanded {
+        margin-left: 70px;
+    }
+
+    /* Top Navigation */
+    .top-nav {
+        background: white;
+        padding: 15px 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .nav-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        cursor: pointer;
+        padding: 8px 15px;
+        border-radius: 25px;
+        transition: background 0.3s ease;
+    }
+
+    .user-profile:hover {
+        background: #f8f9fa;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+    }
+
+    .user-info h4 {
+        font-size: 14px;
+        color: #2c3e50;
+    }
+
+    .user-info p {
+        font-size: 12px;
+        color: #7f8c8d;
+    }
+
+    /* Dashboard Content */
+    .dashboard-content {
+        padding: 30px;
+    }
+
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+
+    .breadcrumb-item {
+        color: #7f8c8d;
+    }
+
+    .breadcrumb-item.active {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .search-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .search-container i {
+        position: absolute;
+        left: 15px;
+        color: #7f8c8d;
+        z-index: 1;
+    }
+
+    .search-input {
+        padding: 12px 15px 12px 45px;
+        border: 1px solid #e0e6ed;
+        border-radius: 25px;
+        width: 300px;
+        background: white;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        width: 350px;
+    }
+
+    .add-btn {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .add-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(46, 204, 113, 0.3);
+    }
+
+    /* Tab System */
+    .tab-container {
+        margin-bottom: 30px;
+    }
+
+    .tab-buttons {
+        display: flex;
+        gap: 5px;
+        background: #f8f9fa;
+        padding: 5px;
+        border-radius: 12px;
+        width: fit-content;
+    }
+
+    .tab-btn {
+        background: none;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        color: #7f8c8d;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .tab-btn.active {
+        background: white;
+        color: #2c3e50;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .tab-count {
+        background: #e74c3c;
+        color: white;
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .tab-btn.active .tab-count {
+        background: #2ecc71;
+    }
+
+    /* Statistics Cards */
+    .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        font-size: 24px;
+        color: white;
+    }
+
+    .stat-icon.total { background: linear-gradient(135deg, #3498db, #2980b9); }
+    .stat-icon.pending { background: linear-gradient(135deg, #f39c12, #e67e22); }
+    .stat-icon.assigned { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+    .stat-icon.completed { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+
+    .stat-value {
+        font-size: 32px;
+        font-weight: 800;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+
+    /* Table Container */
+    .table-container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    /* Data Table */
+    .data-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table th {
+        text-align: left;
+        padding: 15px;
+        background: #fafbfc;
+        border-bottom: 1px solid #f1f3f4;
+        font-weight: 600;
+        color: #555;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .data-table td {
+        padding: 15px;
+        border-bottom: 1px solid #f8f9fa;
+        color: #555;
+        vertical-align: middle;
+    }
+
+    .data-table tr:hover {
+        background: #f8f9fa;
+    }
+
+    /* User Profile Cell */
+    .user-profile-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .profile-pic {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .user-details strong {
+        display: block;
+        font-size: 14px;
+        color: #2c3e50;
+        margin-bottom: 2px;
+    }
+
+    .user-details small {
+        color: #7f8c8d;
+        font-size: 12px;
+    }
+
+    /* Waste Types */
+    .waste-types {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .waste-type {
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .waste-plastic { background: #ffebee; color: #c62828; }
+    .waste-paper { background: #f3e5f5; color: #7b1fa2; }
+    .waste-ewaste { background: #e8f5e8; color: #2e7d32; }
+    .waste-metal { background: #fff3e0; color: #ef6c00; }
+    .waste-glass { background: #e3f2fd; color: #1565c0; }
+    .waste-organic { background: #f1f8e9; color: #558b2f; }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-assigned { background: #e2e3f1; color: #383d41; }
+    .status-in-progress { background: #d1ecf1; color: #0c5460; }
+    .status-completed { background: #d4edda; color: #155724; }
+    .status-cancelled { background: #f8d7da; color: #721c24; }
+
+    /* Priority Badges */
+    .priority-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .priority-low { background: #d4edda; color: #155724; }
+    .priority-medium { background: #fff3cd; color: #856404; }
+    .priority-high { background: #f8d7da; color: #721c24; }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+    }
+
+    .action-btn-sm {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn-sm.view {
+        background: #95a5a6;
+        color: white;
+    }
+
+    .action-btn-sm.view:hover {
+        background: #7f8c8d;
+        transform: translateY(-1px);
+    }
+
+    .action-btn-sm.assign {
+        background: #9b59b6;
+        color: white;
+    }
+
+    .action-btn-sm.assign:hover {
+        background: #8e44ad;
+        transform: translateY(-1px);
+    }
+
+    .action-btn-sm.edit {
+        background: #3498db;
+        color: white;
+    }
+
+    .action-btn-sm.edit:hover {
+        background: #2980b9;
+        transform: translateY(-1px);
+    }
+
+    .action-btn-sm.delete {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .action-btn-sm.delete:hover {
+        background: #c0392b;
+        transform: translateY(-1px);
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f1f3f4;
+    }
+
+    .modal-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #7f8c8d;
+        padding: 5px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+        background: #f8f9fa;
+        color: #e74c3c;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 14px;
+    }
+
+    .form-input, .form-select, .form-textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #e0e6ed;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .waste-types-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .waste-type-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid #e0e6ed;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .waste-type-item:hover {
+        background: #f8f9fa;
+    }
+
+    .waste-type-item input[type="checkbox"] {
+        margin: 0;
+    }
+
+    .waste-weight-input {
+        width: 80px;
+        padding: 5px 8px;
+        border: 1px solid #e0e6ed;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-left: auto;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+        margin-top: 25px;
+        padding-top: 15px;
+        border-top: 1px solid #f1f3f4;
+    }
+
+    .btn-cancel {
+        background: #95a5a6;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+        background: #7f8c8d;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .no-requests {
+        text-align: center;
+        padding: 50px 20px;
+        color: #7f8c8d;
+    }
+
+    .no-requests i {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #bdc3c7;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 70px;
+            transform: translateX(-100%);
+        }
+        
+        .sidebar.mobile-open {
+            transform: translateX(0);
+        }
+        
+        .main-content {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        .dashboard-content {
+            padding: 15px;
+        }
+
+        .stats-cards {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .data-table {
+            min-width: 800px;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .waste-types-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .mobile-menu-btn {
+            display: block;
+            background: none;
+            border: none;
+            color: #2c3e50;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+    }
+
+    .mobile-menu-btn {
+        display: none;
+    }
+
+    .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+    }
+
+    .mobile-overlay.active {
+        display: block;
+    }
+</style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-leaf"></i>
+                <span>EcoWaste</span>
+            </div>
+            <button class="collapse-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <nav class="sidebar-menu">
+            <div class="menu-item" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='user_management.html'">
+                <i class="fas fa-users"></i>
+                <span>User Management</span>
+            </div>
+            <div class="menu-item active" onclick="window.location.href='pickup_req.html'">
+                <i class="fas fa-truck"></i>
+                <span>Pickup Requests</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='waste_analysis.html'">
+                <i class="fas fa-recycle"></i>
+                <span>Waste Analysis</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='reward_system.html'">
+                <i class="fas fa-coins"></i>
+                <span>Reward System</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='partners.html'">
+                <i class="fas fa-handshake"></i>
+                <span>Partners</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='reports.html'">
+                <i class="fas fa-file-alt"></i>
+                <span>Reports</span>
+            </div>
+            <div class="menu-item" onclick="window.location.href='settings.html'">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Navigation -->
+        <div class="top-nav">
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="nav-title">Pickup Requests</h1>
+            <div class="user-profile">
+                <div class="user-avatar">AD</div>
+                <div class="user-info">
+                    <h4>Admin User</h4>
+                    <p>Administrator</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="breadcrumbs">
+                    <span class="breadcrumb-item">Admin</span>
+                    <span class="breadcrumb-item active">Pickup Requests</span>
+                </div>
+                <button class="add-btn" onclick="openModal('add')">
+                    <i class="fas fa-plus"></i> New Request
+                </button>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon total">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="stat-value" id="totalRequests">0</div>
+                    <div class="stat-label">Total Requests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon pending">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-value" id="pendingRequests">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon assigned">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-value" id="assignedRequests">0</div>
+                    <div class="stat-label">Assigned</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon completed">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-value" id="completedRequests">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+            </div>
+
+            <!-- Tab System -->
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="filterByStatus('all')" data-status="all">
+                        <i class="fas fa-list"></i>
+                        All Requests
+                        <span class="tab-count" id="allCount">0</span>
+                    </button>
+                    <button class="tab-btn" onclick="filterByStatus('pending')" data-status="pending">
+                        <i class="fas fa-clock"></i>
+                        Pending
+                        <span class="tab-count" id="pendingCount">0</span>
+                    </button>
+                    <button class="tab-btn" onclick="filterByStatus('assigned')" data-status="assigned">
+                        <i class="fas fa-user-check"></i>
+                        Assigned
+                        <span class="tab-count" id="assignedCount">0</span>
+                    </button>
+                    <button class="tab-btn" onclick="filterByStatus('completed')" data-status="completed">
+                        <i class="fas fa-check-circle"></i>
+                        Completed
+                        <span class="tab-count" id="completedCount">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search by customer name, address, or request ID..." onkeyup="filterRequests()">
+            </div>
+
+            <!-- Requests Table -->
+            <div class="table-container">
+                <div class="data-table-wrapper">
+                    <table class="data-table" id="requestsTable">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Customer</th>
+                                <th>Waste Types</th>
+                                <th>Total Weight</th>
+                                <th>Pickup Date</th>
+                                <th>Address</th>
+                                <th>Status</th>
+                                <th>Collector</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody">
+                            <!-- Request rows will be added dynamically -->
+                        </tbody>
+                    </table>
+                    <div id="noRequestsMessage" class="no-requests" style="display: none;">
+                        <i class="fas fa-truck"></i>
+                        <h3>No pickup requests found</h3>
+                        <p>No requests match your search criteria or no requests have been made yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Request Modal -->
+<div class="modal-overlay" id="requestModal">
+    <div class="modal-content">
